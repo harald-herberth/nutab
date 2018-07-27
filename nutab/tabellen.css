@@ -1,0 +1,28 @@
+.srsTable {font-size: 12px; border-spacing:1px; border-collapse: collapse;}
+.srsTable th {font-weight: bold; background-color: #CCCCCC;}
+.srsTable td, .srsTable th {
+	border:1px solid gray;
+	height:16px;
+	padding:2px 5px;
+	white-space:nowrap;
+}
+.srsTable tr.srsHome {background-color: #A9E489;}
+.srsTable tr.srsHeim {}
+.srsTable tr.srsAusw {}
+.srsTable tr.srsSpielGestrichen{text-decoration: line-through;}
+.srsTable td.srsTabHome {}
+.srsTable .r {text-align: right;}
+.srsTable .c {text-align: center;}
+.srsTable .l {text-align: left;}
+
+.srsTab div {margin: 0px 0px 10px 0px;}
+.srsTab div:nth-last-child(1) {margin: 0px 0px 0px 0px;}
+.srsTab p {font-size: 14px; font-weight: bold; text-align: left;}
+
+.srsPlan div {margin: 0px 0px 10px 0px;}
+.srsPlan div:nth-last-child(1) {margin: 0px 0px 0px 0px;}
+.srsPlan p {font-size: 14px; font-weight: bold; text-align: left;}
+
+.srsLinks {text-align: left;}
+
+p.srsLaden {}
