@@ -185,6 +185,7 @@ function rutf($s) {
 
 // url zu nuliga kann direkt angegenen sein
 if ($url) {
+	$url = str_replace("https:", "http:", $url);
 	if (preg_match(';^http://(.*?)\.liga\.nu/.*?championship=(.*?)&group=(\d+);i', $url, $x)) {
 		// Tabelle für diese Gruppe
 		$verband = $x[1];

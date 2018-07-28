@@ -38,7 +38,7 @@ jQuery(document).ready(function($){
 	// http oder https wird automatisch aus location.protocol bestimmt
 	// SERVER ist zu ersetzen durch den echten Server auf dem fetch_table.php installiert oder genutzt werden soll
 	// immer mit // beginnen und mit / beenden!! Auf das Verzeichnis im Server wo fetch_table installiert ist
-	var server = "//SERVER/pfad/"; 
+	var server = "//SERVER/pfad/"; // OHNE http: vorne, also nicht http://EuerServer... sondern nur //EuerServer...
 	var basis = window.location.href.match(/localhost/) ? "" : window.location.protocol + server;
 	var links = $("div.srsLinks").empty();
 	var anchors = [];
