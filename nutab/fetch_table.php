@@ -25,8 +25,12 @@ Aufruf erfolgt über JSONP
 Todo:
 Umstellen von JSONP auf XHR (dann aber mit CORS, damit andere Vereine das auch nutzen koennen)
 Umstellen von Badgerfish auf normals JSON (das ist auch noch aus ISS3 Zeiten da)
+Verwendenn des eingebauten JSON
 
 */
+error_reporting(E_ALL & ~(E_NOTICE|E_WARNING|E_DEPRECATED));
+error_reporting(E_ALL & ~(E_NOTICE|E_DEPRECATED));
+@ini_set("display_errors", "1");
 
 // alle Parameter als global einlesen
 // auch dies kann man mal besser machen, wenn man will
@@ -178,8 +182,8 @@ function rutf($s) {
 	$s = utf8_decode($s);
 	$s = str_replace('&nbsp;', ' ', $s);
 	$s = html_entity_decode($s);
-	$s = preg_replace('~&#x([0-9a-f]+);~ei', 'chr(hexdec("\\1"))', $s);
-	$s = preg_replace('~&#([0-9]+);~e', 'chr(\\1)', $s);
+	$s = preg_replace_callback('~&#x([0-9a-f]+);~i', function() {$x = $m[0]; return "chr(hexdec($x))";}, $s);
+	$s = preg_replace_callback('~&#([0-9]+);~', function() {$x = $m[0]; return "chr($x)";}, $s);
 	return $s;
 }
 
