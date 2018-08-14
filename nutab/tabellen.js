@@ -6,6 +6,7 @@ Darf frei verwendet werden, solange damit keine Werbung in die erzeugten Tabelle
 Dokumentation siehe im help.html file
 
 BITTE BEACHTEN DASS var server ANGEPASST WERDEN MUSS (weiter unten)
+wird er so gelassen, dann werden die Daten von selben server geladen von dem die Seite geladen wird (dies wird dann die Vereinsseite sein)
 
 Beispiele
 <!-- Einbinden der CSS und JS Dateien -->
@@ -17,16 +18,13 @@ Beispiele
 <div class="srsLinks"></div>
 
 <!-- Tabelle mit voller Anzeige -->
-<div class="srsTab" srsKlasse="BOLWJA" srsVerein="Zirndorf"></div>
-
-<!-- Erzeugt obige Einträge automatisch für alle Tabellen eines Vereins -->
-<div class="srsTabVerein" srsTitle="lang" srsVerein="Zirndorf" srsAuchSpiele=1></div>
+<div class="srsTab" srsurl="..." srsVerein="Zirndorf"></div>
 
 <!-- Spielplan für eineKlasse -->
-<div class="srsPlan" srsKlasse="BOLWJA" srsVerein="Zirndorf" srsAlle=1></div>
+<div class="srsPlan" srsurl="..." srsVerein="Zirndorf" srsAlle=1></div>
 
-<!-- Gesamt-Spielplan für einen Verein, in ganz Bayern -->
-<div class="srsPlanVerein" srsVerein="Zirndorf" srsAlle=1></div>
+<!-- Gesamt-Spielplan für einen Verein -->
+<div class="srsPlanVerein" srsclub="..." srsAlle=1></div>
 
 */
 jQuery(document).ready(function($){
@@ -39,7 +37,7 @@ jQuery(document).ready(function($){
 	// SERVER ist zu ersetzen durch den echten Server auf dem fetch_table.php installiert oder genutzt werden soll
 	// immer mit // beginnen und mit / beenden!! Auf das Verzeichnis im Server wo fetch_table installiert ist
 	var server = "//SERVER/pfad/"; // OHNE http: vorne, also nicht http://EuerServer... sondern nur //EuerServer...
-	var basis = window.location.href.match(/localhost/) ? "" : window.location.protocol + server;
+	var basis = window.location.href.match(/localhost/) || server.match(/SERVER/) ? "" : window.location.protocol + server;
 	var links = $("div.srsLinks").empty();
 	var anchors = [];
 	// Eine einzelne Tabelle aus den Daten erstellen

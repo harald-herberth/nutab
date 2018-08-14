@@ -82,7 +82,7 @@ parametrierte &lt;div&gt; Elemente angezeigt werden.</p>
 <h1>Schreibweise der Parameter</h1>
 
 <p>Alle Parameter haben den Aufbau srsName. Dabei ist Klein- Großschreibung
-egal. srsKlasse kann also auch als srsklasse geschrieben werden.</p>
+egal. srsURL kann also auch als srsurl geschrieben werden.</p>
 
 <p>Das &quot;markup&quot; ist leider schon so alt, dass es nicht kompatible mit
 HTML5 ist. Manche von euch können so Schwierigkeiten haben, wenn sie in relativ
@@ -93,15 +93,15 @@ Und natürlich auch in kompletter Kleinschreibung. Damit sollte das Ganze
 konform zu HTML5 sein. Das alte Format wird weiterhin unterstützt.</p>
 
 <p>Beispiel wäre in neuer Schreibweise:
-    &lt;div class=&quot;srsPlan&quot; data-srsklasse=&quot;BOLM&quot; data-srsverein=&quot;Zirndorf&quot;&gt;&lt;/div&gt;
+    &lt;div class=&quot;srsPlan&quot; data-srsurl=&quot;...&quot; data-srsverein=&quot;Zirndorf&quot;&gt;&lt;/div&gt;
 (alt:
-    &lt;div class=&quot;srsPlan&quot; srsKlasse=&quot;BOLM&quot; srsVerein=&quot;Zirndorf&quot;&gt;&lt;/div&gt;)</p>
+    &lt;div class=&quot;srsPlan&quot; srsurl=&quot;...&quot; srsVerein=&quot;Zirndorf&quot;&gt;&lt;/div&gt;)</p>
 
 <h1>Tabelle einer Staffel (srsTab)</h1>
 <p>Allgemein kann eine Tabelle folgendermaßen eingebunden werden:&nbsp;<br>
 &lt;div class=&quot;srsTab&quot; Parameter=&quot;Wert&quot;&gt;&lt;/div&gt;</p>
 <p>In der kürzesten Form also<br>
-&lt;div class=&quot;srsTab&quot; srsKlasse=&quot;BOLM&quot;&gt;&lt;/div&gt;</p>
+&lt;div class=&quot;srsTab&quot; srsurl=&quot;...&quot;&gt;&lt;/div&gt;</p>
 <p>Notwendige Parameter (die Staffel muss durch einen der folgenden Parameter
 gewählt werden)</p>
 <table border="1">
@@ -163,7 +163,7 @@ gewählt werden)</p>
   </tr>
 </table>
 <p>&nbsp;Anzeige der Spalten selber steuern</p>
-    &lt;div class=&quot;srsTab&quot; srsKlasse=&quot;BYLF&quot; srsVerein=&quot;Zirndorf&quot;
+    &lt;div class=&quot;srsTab&quot; srsurl=&quot;...&quot; srsVerein=&quot;Zirndorf&quot;
     srsTabellenKopf=&quot;M;Pl&quot; srsTabellenSpalten=&quot;Team_Kurzname;Platz&quot;
     srsTabellenFormat=&quot;l;c&quot;&gt;&lt;/div&gt;<p>Spaltennamen sind die
     folgenden Feldnamen::&nbsp;<br>
@@ -395,9 +395,9 @@ eingebaut.</p>
 <p>Z.B. kann das so ausschauen, um drei Tabellen anzuzeigen, und über den drei
 Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
 &lt;div class=&quot;srsLinks&quot;&gt;&lt;/div&gt;<br>
-&lt;div class=&quot;srsTab&quot; srsKlasse=&quot;BOLM&quot;&gt;&lt;/div&gt;<br>
-&lt;div class=&quot;srsTab&quot; srsKlasse=&quot;BOLF&quot;&gt;&lt;/div&gt;<br>
-&lt;div class=&quot;srsTab&quot; srsKlasse=&quot;LLFN&quot;&gt;&lt;/div&gt;</p>
+&lt;div class=&quot;srsTab&quot; srsurl=&quot;...BOLM&quot;&gt;&lt;/div&gt;<br>
+&lt;div class=&quot;srsTab&quot; srsurl=&quot;...BOLF&quot;&gt;&lt;/div&gt;<br>
+&lt;div class=&quot;srsTab&quot; srsurl=&quot;...LLFN&quot;&gt;&lt;/div&gt;</p>
 <h1>Beispiele</h1>
 <table border="1" width="100%">
   <tr>
@@ -408,10 +408,10 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
   </tr>
   <tr>
     <td>
-<div class="srsTab" srsKlasse="BOLM" srsVerein="Zirndorf"></div>
+<div class="srsTab" srsurl="..." srsVerein="Zirndorf"></div>
 </td>
     <td>
-    &lt;div class="srsTab" srsKlasse="BOLM" srsVerein="Zirndorf">&lt;/div&gt;
+    &lt;div class="srsTab" srsurl="..." srsVerein="Zirndorf">&lt;/div&gt;
     </td>
   </tr>
   <tr>
@@ -422,10 +422,10 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
   </tr>
   <tr>
     <td>
-<div class="srsPlan" srsKlasse="BOLM" srsVerein="Zirndorf"></div>
+<div class="srsPlan" srsurl="..." srsVerein="Zirndorf"></div>
 </td>
     <td>
-    &lt;div class="srsPlan" srsKlasse="BOLM" srsVerein="Zirndorf">&lt;/div&gt;
+    &lt;div class="srsPlan" srsurl="..." srsVerein="Zirndorf">&lt;/div&gt;
     </td>
   </tr>
   <tr>
@@ -436,10 +436,10 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
   </tr>
   <tr>
     <td>
-<div class="srsTab" srsKlasse="BYLF" srsVerein="Zirndorf" srsMiniTab="1"></div>
+<div class="srsTab" srsurl="..." srsVerein="Zirndorf" srsMiniTab="1"></div>
 </td>
     <td>
-    &lt;div class="srsTab" srsKlasse="BYLF" srsVerein="Zirndorf" srsMiniTab="1">&lt;/div&gt;
+    &lt;div class="srsTab" srsurl="..." srsVerein="Zirndorf" srsMiniTab="1">&lt;/div&gt;
     </td>
   </tr>
   <tr>
@@ -450,10 +450,10 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
   </tr>
   <tr>
     <td>
-<div class="srsTab" srsKlasse="BYLF" srsVerein="Zirndorf" srsAuchSpiele="1"></div>
+<div class="srsTab" srsurl="..." srsVerein="Zirndorf" srsAuchSpiele="1"></div>
 </td>
     <td>
-    &lt;div class="srsTab" srsKlasse="BYLF" srsVerein="Zirndorf" srsAuchSpiele="1">&lt;/div&gt;
+    &lt;div class="srsTab" srsurl="..." srsVerein="Zirndorf" srsAuchSpiele="1">&lt;/div&gt;
     </td>
   </tr>
   <tr>
