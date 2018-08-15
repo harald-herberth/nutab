@@ -36,7 +36,10 @@ jQuery(document).ready(function($){
 	// http oder https wird automatisch aus location.protocol bestimmt
 	// SERVER ist zu ersetzen durch den echten Server auf dem fetch_table.php installiert oder genutzt werden soll
 	// immer mit // beginnen und mit / beenden!! Auf das Verzeichnis im Server wo fetch_table installiert ist
-	var server = "//SERVER/pfad/"; // OHNE http: vorne, also nicht http://EuerServer... sondern nur //EuerServer...
+	// und immer mit oder ohne www. davor, abhaengig davon, ob ihr eure Seite mit oder ohne aufruft. Also nur das http(s):: davor weglassen
+	var server = "//SERVER/pfad/", // OHNE http: vorne, also nicht http://EuerServer... sondern nur //EuerServer...
+	var options = setOptions(server);
+	server = options.server;
 	var basis = window.location.href.match(/localhost/) || server.match(/SERVER/) ? "" : window.location.protocol + server;
 	var links = $("div.srsLinks").empty();
 	var anchors = [];
@@ -227,7 +230,7 @@ jQuery(document).ready(function($){
 			    type: "GET",
 			    url: basis + "fetch_table.php",
 			    data : p, 
-			    dataType: "jsonp",
+			    dataType: options.ajaxDataType,
 			    success: function(data, textstatus) {
 				show_tables(div, data, p);
 			    },
@@ -271,7 +274,7 @@ jQuery(document).ready(function($){
 		    type: "GET",
 		    url: basis + "fetch_table.php",
 		    data : p, 
-		    dataType: "jsonp",
+		    dataType: options.ajaxDataType,
 		    success: function(data, textstatus) {
 			show_plan(o.get(), data, p);
 		    },
@@ -417,7 +420,7 @@ jQuery(document).ready(function($){
 			    type: "GET",
 			    url: basis + "fetch_table.php",
 			    data : p, 
-			    dataType: "jsonp",
+			    dataType: options.ajaxDataType,
 			    success: function(data, textstatus) {
 				    // falls verein als blsv_nummer angegeben wurde löschen und nicht mehr im Filter betrachten
 				    if (parseInt(p.verein) > 0) p.verein = "";
@@ -452,4 +455,20 @@ jQuery(document).ready(function($){
 		}
 		processPart();
 	});
+	function setOptions(server) {
+		var o = {
+			server: server,
+			ajaxDataType: "json",
+		};
+		$("div.srsConf").each(function() {
+			var c = $(this);
+			for (var x in o) {
+				var aname = "srs" + x;
+				if (c.attr(aname)) o[x] = c.attr(aname);
+				aname = "data-" + aname;
+				if (c.attr(aname)) o[x] = c.attr(aname);
+			}
+		});
+		return o;
+	}
 });

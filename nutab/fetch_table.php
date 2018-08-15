@@ -319,9 +319,12 @@ if (!$r or $r == "[]") {
 	//@unlink("cache/nu_state.txt");
 }
 // set content type
+if (!$callback) $jh = 1;
 if ($cty) header("Content-Type: $cty");
 else if ($jh) header("Content-Type: application/json; charset=utf-8");
 else header("Content-Type: application/javascript; charset=utf-8");
+// CORS
+if ($_SERVER['HTTP_ORIGIN']) header("Access-Control-Allow-Origin: *");
 
 if ($callback) echo "$callback($r)";
 else echo "$r";
