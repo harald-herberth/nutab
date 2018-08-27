@@ -32,15 +32,20 @@ jQuery(document).ready(function($){
 	window.srsLoaded = true;
 	$.ajaxSettings.cache = false;
 	// basis ist die URL von der später dann fetch_table.php aufzurufen ist. 
-	// Kann leer sein bei localhost oder (TBD) wenn vom eigenen Server geladen werden soll
+	// kann auch leer oder unverändert gelassen werden, dann wir der Server genommen von dem aus die Seite geladen wurde
 	// http oder https wird automatisch aus location.protocol bestimmt
-	// SERVER ist zu ersetzen durch den echten Server auf dem fetch_table.php installiert oder genutzt werden soll
+	// SERVER kann ersetzt werden durch den echten Server auf dem fetch_table.php installiert oder genutzt werden soll
 	// immer mit // beginnen und mit / beenden!! Auf das Verzeichnis im Server wo fetch_table installiert ist
 	// und immer mit oder ohne www. davor, abhaengig davon, ob ihr eure Seite mit oder ohne aufruft. Also nur das http(s):: davor weglassen
-	var server = "//SERVER/pfad/", // OHNE http: vorne, also nicht http://EuerServer... sondern nur //EuerServer...
+	var server = "//SERVER/pfad/"; // OHNE http: vorne, also nicht http://EuerServer... sondern nur //EuerServer...
 	var options = setOptions(server);
 	server = options.server;
-	var basis = window.location.href.match(/localhost/) || server.match(/SERVER/) ? "" : window.location.protocol + server;
+	// da so viele Probleme mit der Server Konfiguration haben, testen wir das gleich
+	if (server && server.indexOf("//") !== 0 || server === "//") {
+		alert("Bitte var server='..' richtig konfigurieren. Ist derzeit: " + server);
+		return;
+	}
+	var basis = !server || window.location.href.match(/localhost/) || server.match(/SERVER/) ? "" : window.location.protocol + server;
 	var links = $("div.srsLinks").empty();
 	var anchors = [];
 	// Eine einzelne Tabelle aus den Daten erstellen

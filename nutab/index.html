@@ -24,6 +24,12 @@ möchtet, aber dies nicht auf einem eigenen Server hinterlegen könnt, gibt es
 auch die Möglichkeit, eine Seite mit beliebig vielen Tabellen über eine URL zusammenzustellen, die URL auf diese Konfiguration in den Favoriten
 abzuspeichern, und dann bei Bedarf abzurufen. Natürlich kann diese URL auch auf
 einer Webseite als Link hinterlegt werden. Details dazu siehe weiter hinten.</p>
+<p>Q: Warum geht meine Vereinsseite in Mittelfranken oder dem Bayerischen Handballverband nach der Umstellung nicht mehr?<br>
+A: Die OpenSpource Version kommt ohne Datenbank auf dem Server aus. Damit können die alten Parameter srsKlasse, srsLiganummer, srsVerein
+nicht mehr auf die dafür passenden nuLiga URL-Parameter abgebildet werden.
+Also kann jetzt nur noch srsURL und srsClub und srsVerband zur Identifikation verwendet werden.
+Details siehe Beschreibung weiter unten.
+</p>
 <p>Q: Welche Grundsvoraussetzungen muss mein Webserver erfüllen?<br>
 A: &lt;script&gt; -Tags müssen erlaubt sein. Dies ist in den meisten Servern
 möglich, in Foren in der Regel allerdings nicht</p>
@@ -294,8 +300,8 @@ gewählt werden)</p>
 <h1>Gesamtspielplan eines Vereins (srsPlanVerein)</h1>
 <p>Der Gesamt-Spielplan eines Vereins kann folgendermaßen eingebunden werden:<br>
 &lt;div class=&quot;srsPlanVerein&quot; Parameter=&quot;Wert&quot;&gt;&lt;/div&gt;</p>
-<p>Notwendige Parameter (der Verein muss durch einen der folgenden Parameter
-gewählt werden, also entweder Verein oder Club)</p>
+<p>Notwendige Parameter (der Verein muss durch srsClub und srsVerband bestimmt werden)
+</p>
 <table border="1">
   <tr>
     <td>srsClub</td>
