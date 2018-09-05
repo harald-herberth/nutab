@@ -395,7 +395,7 @@ jQuery(document).ready(function($){
 		var m;
 		// get all attributes srs*
 		$.each([
-			"srsTitle","srsVerein","srsAlle", "srsHeimGast", "srsVon", "srsBis",
+			"srsTitle","srsAlle", "srsHeimGast", "srsVon", "srsBis", "srsNeueVorne", "srsSportart", 
 			"srsTabellenSpalten", "srsTabellenKopf", 
 			"srsClub", "srsVerband",
 			"srsTabellenFormat", "srsNurHalle", "srsOhneHalle", "srsMaxZeilen"
@@ -409,16 +409,13 @@ jQuery(document).ready(function($){
 			o.html("Keinen Verein angegeben");
 			return;
 		}
-		// sind mehrere vereine/clubs zu mischen
+		// sind mehrere clubs zu mischen
 		p.club = p.club || "";
-		p.verein = p.verein || "";
 		var clubs = p.club.split(",");
-		var vereine = p.verein.split(",");
 		var dataAll = [];
 		p.club = clubs.shift();
-		p.verein = vereine.shift();
 		if (p.title) m = "<p>"+p.title+"</p>"; else m = "";
-		o.html(m+"<p class=\"srsLaden\">" + (window.srsPlanMsg || "Gesamt-Spielplan " + (p.verein) + " wird geladen") + "</p>");
+		o.html(m+"<p class=\"srsLaden\">" + (window.srsPlanMsg || "Gesamt-Spielplan " + "" + " wird geladen") + "</p>");
 		p.spielplanverein = 1;
 		var processPart = function() {
 			$.ajax({
@@ -427,29 +424,24 @@ jQuery(document).ready(function($){
 			    data : p, 
 			    dataType: options.ajaxDataType,
 			    success: function(data, textstatus) {
-				    // falls verein als blsv_nummer angegeben wurde löschen und nicht mehr im Filter betrachten
-				    if (parseInt(p.verein) > 0) p.verein = "";
 				    if (data && data.error && data.error.$) {show_plan(o.get(), data, p); return;}
+				    if (data && data.Spielplan && data.Spielplan.Spielplan) {
+					    dataAll = dataAll.concat(data.Spielplan.Spielplan);
+				    }
 				    if (clubs.length > 0) {
-					    if (data && data.Spielplan && data.Spielplan.Spielplan) {
-						    dataAll = dataAll.concat(data.Spielplan.Spielplan);
-					    }
 					    p.club = clubs.shift();
-					    //p.verein = vereine.shift();
 					    processPart();
 					    return;
 				    }
 				    if (dataAll.length) {
-					    if (data && data.Spielplan && data.Spielplan.Spielplan) {
-						    dataAll = dataAll.concat(data.Spielplan.Spielplan);
-						    dataAll.sort(function(a,b) {
-							    if (a.SpieldatumTag.$ < b.SpieldatumTag.$) return -1;
-							    if (a.SpieldatumTag.$ > b.SpieldatumTag.$) return 1;
-							    return 0;
-						    });
-						    data.Spielplan.Spielplan = dataAll;
-					    }
+					    //alert("neue vorne " + p.neuevorne);
+					    dataAll.sort(function(a,b) {
+						    if (a.Spieldatum.$ < b.Spieldatum.$) return (p.neuevorne > 0 ? 1 : -1);
+						    if (a.Spieldatum.$ > b.Spieldatum.$) return (p.neuevorne > 0 ? -1 : 1);
+						    return 0;
+					    });
 				    }
+				    data.Spielplan.Spielplan = dataAll;
 				    p.alle = 0;
 				    show_plan(o.get(), data, p);
 			    },

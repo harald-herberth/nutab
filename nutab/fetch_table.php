@@ -190,12 +190,13 @@ function rutf($s) {
 // url zu nuliga kann direkt angegenen sein
 if ($url) {
 	$url = str_replace("https:", "http:", $url);
-	if (preg_match(';^http://(.*?)\.liga\.nu/.*?championship=(.*?)&group=(\d+);i', $url, $x)) {
+	if (preg_match(';^http://(.*?)\.liga\.nu/.*?\/nuLiga(.*?)\.woa.*?championship=(.*?)&group=(\d+);i', $url, $x)) {
 		// Tabelle für diese Gruppe
 		$verband = $x[1];
-		$cs = urldecode($x[2]);
-		$gruppe = $x[3];
-		$url = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=".urlencode($cs)."&group=$gruppe";
+		$sportart = $x[2];
+		$cs = urldecode($x[3]);
+		$gruppe = $x[4];
+		$url = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."&group=$gruppe";
 		//ex($url);die;
 	} else {
 		//print_r("else ".$url);die;
@@ -205,6 +206,7 @@ if ($url) {
 	$spielplanverein = 0;
 }
 
+if (!$sportart) $sportart = "HBDE";
 if ($spielplanverein) {
 	$spielplan = 0;
 	if (!$verband) $verband = "bhv-handball";
@@ -226,13 +228,13 @@ if ($spielplanverein) {
 	}
 	$ss = $s; $ee = $e;
 	if ($s and $e) $s = "&searchTimeRangeFrom=$s&searchTimeRangeTo=$e"; else $s = "";
-	$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/clubMeetings?searchTimeRange=2&searchType=1{$s}&club={$club}&searchMeetings=Suchen";
+	$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/clubMeetings?searchTimeRange=2&searchType=1{$s}&club={$club}&searchMeetings=Suchen";
 }
 
 if ($u && ($gruppe || $club)) {
 	if ($spielplan) {
 		if ($verband) 
-		$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?displayTyp=vorrunde&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
+		$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=vorrunde&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
 		else
 		$u = "http://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?displayTyp=vorrunde&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
 		if ($aktuell) $u .= "&aktuell=1";

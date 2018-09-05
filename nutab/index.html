@@ -69,6 +69,7 @@ mit Staffel, eigentlich bezieht sich Tabelle und Spielplan immer auf eine
 Staffel.</p>
 <h1>Änderungen</h1>
 <dl>
+	<li>2019-02-08: srsNeueVorne eingeführt um Vereinsspielplan verkehrt zu sortieren. Andere Sportarten als Handball duch srsSportart (zB DARTDE) eingeführt
 	<li>2018-07-22: Erste OpenSource Version, losgelöst von dem ursprünglichen Server
 	<li>2017-08-29: Link auf Spielbericht durch @sbb. Default als Link am Ergebnis.
 </dl>
@@ -113,11 +114,9 @@ gewählt werden)</p>
 <table border="1">
   <tr>
     <td>srsURL</td>
-    <td>URL auf Tabelle der Liga in nuLiga (entweder Gruppe, Klasse, Liganummer oder URL
-      in der Reihenfolge angeben).<br>
+    <td>URL auf Tabelle der Liga in nuLiga.<br>
       zB srsURL=&quot;<a href="http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226">http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226</a>&quot;<br>
       Bitte auf jeden Fall nur http, ohne https!<br>
-      Geht überall im BHV und in allen anderen Landesverbänden.</td>
   </tr>
 </table>
 <p>&nbsp;Optionale Parameter</p>
@@ -207,11 +206,9 @@ gewählt werden)</p>
 <table border="1">
   <tr>
     <td>srsURL</td>
-    <td>URL auf Tabelle der Liga in nuLiga (entweder Gruppe, Klasse, Liganummer oder URL
-      in der Reihenfolge angeben).<br>
+    <td>URL auf Tabelle der Liga in nuLiga.<br>
       zB srsURL=&quot;<a href="http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226">http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226</a>&quot;<br>
       Bitte auf jeden Fall nur http, ohne https!<br>
-      Geht überall im BHV und in allen anderen Landesverbänden.</td>
   </tr>
 </table>
 <p>&nbsp;Optionale Parameter</p>
@@ -316,7 +313,15 @@ gewählt werden)</p>
     <td>srsVerband</td>
     <td>Nur wenn srsClub angegeben wurde. Kann für den BHV verwendet werden. Muss für andere Landesverbände
       angegeben werden.<br>
- Dieser besteht aus den Zeichen ab dem // in der URL bis zum .liga.nu,&nbsp;also bremerhv-handball, oder hvn-handball</td>
+ Dieser besteht aus den Zeichen ab dem // in der URL bis zum .liga.nu,&nbsp;also bremerhv-handball, oder hvn-handball, oder bdv-dart für Dart</td>
+  </tr>
+  <tr>
+    <td>srsSportart</td>
+    <td>Falls eine andere Sportart als Handball angezeigt werden soll, zB DARTDE für Dart in Deutschland. 
+	    <br>
+	    Dies ist in der URL (WebObjects/nuLigaDARTDE.woa/wa/) der Teil zwischen nuLiga und .woa, der dort DARTDE sein wird.
+	    Falls nicht angegeben wird HBDE (also Handball) genommen.
+	</td>
   </tr>
 </table>
 <p>&nbsp;Optionale Parameter</p>
@@ -351,6 +356,10 @@ gewählt werden)</p>
       der Tage relativ zu heute anzeigt.&nbsp;<br>
       srsVon=14 sagt: vor 14 Tagen, srsBis=21 sagt alles innerhalb er nächsten
       21 Tage.</td>
+  </tr>
+  <tr>
+    <td>srsNeueVorne</td>
+    <td>plan wird verkehrt sortiert, also neueste Spiele sind oben. Dies ist sinnvoll bei der Anzeige der Historie.  </td>
   </tr>
   <tr>
     <td>srsNurHalle</td>
@@ -408,34 +417,6 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
 <table border="1" width="100%">
   <tr>
     <td colspan=2>
-      <h3>&nbsp;Anzeige einer &quot;normalen&quot; Tabelle für eine in
-      SRS vorhandene Spielklasse</h3>
-    </td>
-  </tr>
-  <tr>
-    <td>
-<div class="srsTab" srsurl="..." srsVerein="Zirndorf"></div>
-</td>
-    <td>
-    &lt;div class="srsTab" srsurl="..." srsVerein="Zirndorf">&lt;/div&gt;
-    </td>
-  </tr>
-  <tr>
-    <td colspan=2>
-      <h3>&nbsp;Anzeige eines Spielplans für eine in
-      SRS vorhandene Spielklasse</h3>
-    </td>
-  </tr>
-  <tr>
-    <td>
-<div class="srsPlan" srsurl="..." srsVerein="Zirndorf"></div>
-</td>
-    <td>
-    &lt;div class="srsPlan" srsurl="..." srsVerein="Zirndorf">&lt;/div&gt;
-    </td>
-  </tr>
-  <tr>
-    <td colspan=2>
       <h3>&nbsp;Anzeige einer &quot;Mini&quot; Tabelle (falls man wenig
       Platz auf seiner Seite verbrauchen möchte)</h3>
     </td>
@@ -464,8 +445,7 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
   </tr>
   <tr>
     <td colspan=2>
-      <h3>&nbsp;Anzeige einer &quot;normalen&quot; Tabelle für eine bestimmte
-      Liganummer</h3>
+      <h3>&nbsp;Anzeige einer &quot;normalen&quot; Tabelle</h3>
     </td>
   </tr>
   <tr>
@@ -473,7 +453,7 @@ Tabellen eine Link-Leiste auf die einzelnen Tabellen.<br>
 <div class="srsTab" srsliganummer="24022000" srsVerein="Buckenhofen"></div>
 </td>
     <td>
-    &lt;div class=&quot;srsTab&quot; srsliganummer=&quot;24022000&quot; srsVerein=&quot;Buckenhofen&quot;&gt;&lt;/div>
+    &lt;div class=&quot;srsTab&quot;  srsurl="..." srsVerein=&quot;Buckenhofen&quot;&gt;&lt;/div>
     </td>
   </tr>
 </table>
