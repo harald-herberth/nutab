@@ -23,25 +23,20 @@ function set_base($u) {
 	$this->base = $u;
 }
 function init($s) {
-	// hier haben wir mehrere <table> drin, eine für die Tabelle, und 2 für Spielplan nachher und vorher?
+	// hier haben wir mehrere <table> drin, eine für die Tabelle, und für Spielplan nachher
 	$a = array();
 	if(1 > preg_match_all(';<table.*</table;ismU', $s, $x)) return;
-	//print_r($x);
+	$x = $x[0];
 	$tab = "";
 	$sn = "";
-	$s = $x[0][0];
-	if (preg_match(';>Rang<|>Raster<;ismU', $s)) {
-		$tab = $s;
-	}
-	if (preg_match(';>Tag;ismU', $s)) {
-		$sn = $s;
-	}
-	$s = $x[0][1];
-	if (preg_match(';>Rang<;ismU', $s)) {
-		$tab = $s;
-	}
-	if (preg_match(';>Tag;ismU', $s)) {
-		$sn = $s;
+	for ($i=0; $i<count($x); $i++) {
+		$s = $x[$i];
+		if (preg_match(';>Rang<|>Raster<;ismU', $s)) {
+			$tab = $s;
+		}
+		if (preg_match(';>Heimmannschaft;ismU', $s)) {
+			$sn = $s;
+		}
 	}
 	if (!$tab) return;
 	if ($tab && 1 > preg_match_all(';<tr.*</tr;ismU', $tab, $x)) return;
@@ -56,6 +51,7 @@ function init($s) {
 			$x[$i] = trim($x[$i]);
 		}
 		$platz = $x[1];
+		// TBD Spalten sind bei Tennis anders, vielleicht noch aendern?
 		$tore = explode(":", $x[7]);
 		$punkte = explode(":", $x[9]);
 		if (count($x) <= 5) {

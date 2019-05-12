@@ -337,9 +337,9 @@ if ($jn) {
 
 if (!$r or $r == "[]") {
 	if ($jn)
-	$r = '{error: "Keine gueltigen Daten unter dieser Adresse"}';
+	$r = '{"error": "Keine gueltigen Daten unter dieser Adresse"}';
 	else
-	$r = "{error: {\$:\"Keine gueltigen Daten unter dieser Adresse\"}}";
+	$r = '{"error": {"$":"Keine gueltigen Daten unter dieser Adresse"}}';
 	//@unlink("cache/nu_state.txt");
 }
 // set content type
