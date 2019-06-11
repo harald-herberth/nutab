@@ -41,8 +41,10 @@ function init($s) {
 	if (!$tab) return;
 	if ($tab && 1 > preg_match_all(';<tr.*</tr;ismU', $tab, $x)) return;
 	$rows = $x[0];
+	if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 1; else $tennis = 0;
 	//echo "<pre>" . htmlentities(print_r($tab,true));die;
 	array_shift($rows);
+	$all_empty = array_fill(0,20,"");
 	foreach($rows as $row) {
 		if (1 > preg_match_all(';<td.*</td;ismU', $row, $x)) return;
 		$x = $x[0];
@@ -50,16 +52,22 @@ function init($s) {
 			$x[$i] = preg_replace(';<.*(>|$);ismU', '', $v);
 			$x[$i] = trim($x[$i]);
 		}
-		$platz = $x[1];
-		// TBD Spalten sind bei Tennis anders, vielleicht noch aendern?
-		$tore = explode(":", $x[7]);
-		$punkte = explode(":", $x[9]);
+		list(, $platz, $mannschaft, $begegnungen, $g, $u, $v, $punkte, $matchpunkte, $saetze, $spiele, ) = $all_empty;
+		list(, $platz, $mannschaft, $begegnungen, $g, $u, $v, $tore, $diff, $punkte, ) = $all_empty;
+		list(, $platz, $mannschaft, $begegnungen, $g, $u, $v, $tore, $diff, $punkte, ) = $x;
+		if ($tennis)
+		list(, $platz, $mannschaft, $begegnungen, $g, $u, $v, $punkte, $matchpunkte, $saetze, $spiele, ) = $x;
+		$tore = explode(":", $tore);
+		$punkte = explode(":", $punkte);
+		$matchpunkte = explode(":", $matchpunkte);
+		$saetze = explode(":", $saetze);
+		$spiele = explode(":", $spiele);
 		if (count($x) <= 5) {
 			$platz = 255; // Ex, also zurückgezogen. 254 wäre AK
 			if (preg_match(';Konkurrenz;', $row)) $platz = 254; 
 			$o = array(
 				"Platz" => $platz, 
-				"Team_Kurzname" => $x[2], 
+				"Team_Kurzname" => $mannschaft, 
 				"Spiele" => "", 
 				"SpieleGewonnen" => "", 
 				"SpieleUnentschieden" => "", 
@@ -73,22 +81,40 @@ function init($s) {
 		} else {
 			$o = array(
 				"Platz" => $platz, 
-				"Team_Kurzname" => $x[2], 
-				"Spiele" => $x[3], 
-				"SpieleGewonnen" => $x[4], 
-				"SpieleUnentschieden" => $x[5], 
-				"SpieleVerloren" => $x[6], 
+				"Team_Kurzname" => $mannschaft, 
+				"Spiele" => $begegnungen, 
+				"SpieleGewonnen" => $g, 
+				"SpieleUnentschieden" => $u, 
+				"SpieleVerloren" => $v, 
 				"PlusPunkte" => (int) $punkte[0], 
 				"MinusPunkte" => (int) $punkte[1], 
 				"PlusTore" => (int) $tore[0], 
 				"MinusTore" => (int) $tore[1], 
-				"DiffTore" => $x[8] 
+				"DiffTore" => $diff 
+			);
+			if ($tennis)
+			$o = array(
+				"Platz" => $platz, 
+				"Team_Kurzname" => $mannschaft, 
+				"Spiele" => $begegnungen, 
+				"SpieleGewonnen" => $g, 
+				"SpieleUnentschieden" => $u, 
+				"SpieleVerloren" => $v, 
+				"PlusPunkte" => (int) $punkte[0], 
+				"MinusPunkte" => (int) $punkte[1], 
+				"PlusMatchPunkte" => (int) $matchpunkte[0], 
+				"MinusMatchPunkte" => (int) $matchpunkte[1], 
+				"PlusSaetze" => (int) $saetze[0], 
+				"MinusSaetze" => (int) $saetze[1], 
+				"PlusSpiele" => (int) $spiele[0], 
+				"MinusSpiele" => (int) $spiele[1], 
 			);
 		}
 		$a[] = $o;
 		//pp($o);
 	}
 	$this->a = $a;
+	$this->tennis = $tennis;
 	// Spiele auch noch parsen
 	if ($sn) {
 		$s = new NuPlan2;
@@ -102,6 +128,7 @@ function init($s) {
 function get_xml() {
 	if (!is_array($this->a) || !count($this->a)) return "";
 	$x = "<Aktueller_Spielplan>\n";
+	$x .= "<Tennis>$this->tennis</Tennis>\n";
 	foreach($this->a as $a) {
 		$x .= "<Tabelle>\n";
 		foreach($a as $i => $v) {
@@ -140,6 +167,7 @@ function get_xml() {
 }
 
 // Vereinsplan
+// TBD Tennis gibt es so nicht
 class NuPlan {
 function set_base($u) {
 	$this->base = preg_replace(';/cgi-bin.*;', "", $u);
@@ -286,51 +314,67 @@ function init($s) {
 	// wir koennen eine oder zwei runden drin haben, jeweils eine tabelle
 	// bei Pokal kann Tabelle und Spielplan drin sein, oder nur Spielplan, optional mit xtelfinale als erst zeile
 	// oder es sind Entscheidungsspiele, dann sind zwei Tabellen drin, Tabelle und Spielplan
-	$ntab = preg_match_all(';<table.*</table;ismU', $s, $x);
+	if(1 > preg_match_all(';<table.*</table;ismU', $s, $x)) return;
 	$x = $x[0];
-	if ($ntab < 1 or $ntab > 2) return "";
-	if (preg_match(';Molten-Cup|Bezirkspokal;ismU', $s)) $pokal = 1;
-	if ($pokal and $ntab <> 1) return "";
-	if ($ntab == 2 and preg_match(';Rang.*Mannschaft.*Begegnungen;ismU', $x[0]) and 
-			preg_match(';Tag Datum Zeit.*Heimmannschaft.*Gastmannschaft;ismU', $x[1])) {
-		$ent = 1;
-		$ntab = 1;
-		array_shift($x[0]);
+	$tab = "";
+	$sn = "";
+	for ($i=0; $i<count($x); $i++) {
+		$s = $x[$i];
+		if (preg_match(';>Rang<|>Raster<;ismU', $s)) {
+			$tab = $s;
+		}
+		if (preg_match(';>Heimmannschaft;ismU', $s)) {
+			$sn = $s;
+		}
 	}
-	if (1 > preg_match_all(';<tr.*</tr;ismU', $x[0], $x1)) return "";
-	$rows = $x1[0];
-	if ($ntab == 1 and preg_match(';Tag Datum Zeit.*Heimmannschaft.*Gastmannschaft;ismU', $rows[1])) {
-		array_shift($rows);
+	if (!$sn) return;
+	if ($sn && 1 > preg_match_all(';<tr.*</tr;ismU', $sn, $x)) return;
+	$rows = $x[0];
+	if (preg_match(';>Heimmannschaft.*Gastmannschaft;ismU', $rows[1])) {
+		array_shift($rows); // bei Pokal wird Zeile mit Finale entfernt
 	}
-	if (preg_match(';Halle.*Nr\..*Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
-	if ($ntab > 1) {
-		if (1 > preg_match_all(';<tr.*</tr;ismU', $x[1], $x2)) return "";
-		$rows = array_merge($x1[0], $x2[0]);
-	}
+	if (preg_match(';Halle.*Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
+	if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 1; else $tennis = 0;
+	array_shift($rows);
 	$datum = date("d.m.Y");
 	foreach($rows as $row) {
 		// tag, datum, zeit, halle, [Nr,] Heim, Gast, sr/tore(oder wertung), Bericht, genehmigt?
-		//  0     1      2    3      4   5      6       7                     8      9
+		//  0     1      2    3      4     5      6       7                     8      9
 		// wenn nur die <th> header, oder nur ein <td> bei Pokal die Runde, => weiter
+		// bei Dart (wie Handball, ohne Spielnummer)
+		// tag, datum, zeit, Halle, Heim, Gast, Spiele(Wertung), Bericht
+		// bei tennis
+		// tag, datum-zeit, , Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
+		// tag, datum, zeit, , ,  Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
+		//  0,    1    2    3 4     5    6       7          8       9       10
 		if (2 > preg_match_all(';<td.*</td;ismU', $row, $x)) continue; 
 		$x = $x[0];
 		// bei termin offen haben wir eine Spalte weniger, und kein Datum
-		if (preg_match('/Termin offen/ismU', $x[0])) {
+		if (!$tennis && preg_match('/Termin offen/ismU', $x[0])) {
 			array_shift($x);
 			array_unshift($x, "");
 			array_unshift($x, "");
 			$x[2] = "00:02";
 		}
+		// bei Tennis Zeit in extra Spalte und leere spalten einfügen
+		if ($tennis) {
+			if (preg_match(';(\d\d\.\d\d\.\d\d\d\d) (\d\d:\d\d);ismU', $x[1], $xx)) {
+				array_splice($x, 1, 2, array($xx[1], $xx[2], "", ""));
+			} else
+				array_splice($x, 1, 2, array($datum, $zeit, "", ""));
+		}
 		// falls keine Spielnummer da ist, eine 0 einfügen
-		if ($keineSpNummer) {
+		if (!$tennis && $keineSpNummer) {
 			array_splice($x, 4, 0, array("0"));
 		}
-		$sr = $x[7];
-		$sbb = $x[8];
-		preg_match('/href="(.*?)"/', $sbb, $sbb); $sbb = $sbb[1]; $sbb = $this->base . $sbb;
-		$sbb = base64_encode($sbb);
-		if (!$this->base) $sbb = "";
+		$sbb = $x[$tennis ? 10 : 8];
+		if (preg_match('/href="(.*?)"/', $sbb, $sbb)) {
+			$sbb = $sbb[1]; $sbb = $this->base . $sbb;
+			$sbb = base64_encode($sbb);
+			if (!$this->base) $sbb = "";
+		} else $sbb = "";
 		//pp($sbb);die;
+		$sr = $x[7];
 		foreach ($x as $i => $v) {
 			$x[$i] = str_replace("\r\n", "", $x[$i]);
 			$x[$i] = str_replace("\r", "", $x[$i]);
@@ -343,8 +387,7 @@ function init($s) {
 		if ($x[1]) $datum = $x[1];
 		$zeit = "00:00";
 		if ($x[2]) $zeit = substr(trim($x[2]),0,5);
-		//if ($pokal and $zeit == '00:00') continue; // bei Pokal nehmen wir erst Spiele, die angesetzt sind
-		if ($pokal and !$x[6]) continue; // bei Pokal nehmen wir nur Spiele mit Gast (rest freilos)
+		if (!$tennis && $pokal and !$x[6]) continue; // bei Pokal nehmen wir nur Spiele mit Gast (rest freilos)
 		if (preg_match(';u;ismU', $x[2])) $zeit = "00:00";
 		if (preg_match(';kampflos;ismU', $row)) $zeit = "00:01";
 		preg_match(';(\d\d)\.(\d\d)\.(\d\d\d\d);ismU', $datum, $xx);
@@ -353,7 +396,6 @@ function init($s) {
 		//2008-05-03T17:45:00+02:00 2008.05.03
 		$x[5] = str_replace("'","",$x[5]);
 		$x[6] = str_replace("'","",$x[6]);
-		//if ($pokal and preg_match(';Sieger|Spiel\s+230;ismU', $x[5] . $x[6])) continue; // bei Pokal nehmen wir erst Spiele, die zwei richige Gegner haben
 		$halle_nr = (int) $x[3];
 		$halle = $x[3];
 		$tore_heim = "";
@@ -365,7 +407,12 @@ function init($s) {
 		}
 		$wertung = "";
 		$sr1 = $sr2 = "";
-		if (preg_match(';<span title=;', $sr) and strlen($x[7]) > 2 and !preg_match(";:;", $x[7])) {
+		$spn = $x[4];
+		if ($tennis) {
+			list($mpunkte_heim, $mpunkte_gast) = explode(":", $x[7]);
+			list($saetze_heim, $saetze_gast) = explode(":", $x[8]);
+			list($spiele_heim, $spiele_gast) = explode(":", $x[9]);
+		} else if (preg_match(';<span title=;', $sr) and strlen($x[7]) > 2 and !preg_match(";:;", $x[7])) {
 			// SR sind hier eingetragen, oder SR und Spielwertung 
 			// bei SR ist der title im span
 			// bei wertung ist der title im td, und es kommt noch was nach dem sr span
@@ -384,7 +431,6 @@ function init($s) {
 			$wertung = strtoupper(trim($x[7]));
 		}
 
-		$spn = $x[4];
 		$o = array(
 			"Liga_Nummer" => 0,
 			"Liga_Name_kurz" => "todo",
@@ -416,7 +462,15 @@ function init($s) {
 			"SR2" => $sr2,
 			"sbb" => "$sbb",
 		);
-		if (!preg_match(';z;ismU', $wertung)) {
+		if ($tennis) $o = array_merge($o, array(
+			"MatchPunkte_Heim" => $mpunkte_heim,
+			"MatchPunkte_Gast" => $mpunkte_gast,
+			"Saetze_Heim" => $saetze_heim,
+			"Saetze_Gast" => $saetze_gast, 
+			"Spiele_Heim" => $spiele_heim, 
+			"Spiele_Gast" => $spiele_gast,
+		));
+		if ($tennis or !preg_match(';z;ismU', $wertung)) {
 			$a[] = $o;
 			if ($heute <= $da) $this->aktiv = 1;
 			if ($this->von > $da && $zeit > "00:05") $this->von = $da;
@@ -425,6 +479,7 @@ function init($s) {
 	}
 	//pp($a); die;
 	$this->a = $a;
+	$this->tennis = $tennis;
 	if ($this->aktuell) $this->filter();
 	//echo htmlentities($s);
 	return "";
@@ -473,6 +528,7 @@ function filter() {
 function get_xml() {
 	if (!is_array($this->a) || !count($this->a)) return "";
 	$x = "<Spielplan>\n";
+	$x .= "<Tennis>$this->tennis</Tennis>\n";
 	foreach($this->a as $a) {
 		$x .= "<Spielplan>\n";
 		foreach($a as $i => $v) {

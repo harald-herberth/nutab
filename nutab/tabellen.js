@@ -76,7 +76,6 @@ jQuery(document).ready(function($){
 				fe = f.split(/\+/);
 				for (i = 0; i < fe.length; i++) {
 					// ein Ausdruck
-					feu = fe[i].split(/@/);
 					// feld started mit %, also Konstante
 					if (fe[i].match(/^%/))
 						fev = fe[i].substr(1);
@@ -137,28 +136,37 @@ jQuery(document).ready(function($){
 		if (+p.minitab) p.auchspiele = "";
 		var d; // temporary div to hold one table
 		var aa;
+		var tennis;
 		// show vorherige_Spiele
 		if (p.auchspiele > 0 && data.Aktueller_Spielplan && data.Aktueller_Spielplan.vorherige_Spiele) {
-			p.header = "Datum;Zeit;Heim;Gast;Tore";
-			p.fields = "SpieldatumTag/^..(..).(..).(..)$/$3.$2.$1;Spieldatum!11!5;HeimTeam_Name_kurz;GastTeam_Name_kurz;Heim+%:+Gast";
-			p.classCol = "l;l;l;l;c;c";
+			tennis = +data.Aktueller_Spielplan.Tennis.$;
+			p.header = plan_format[tennis ? 4 : 0].header;
+			p.fields = plan_format[tennis ? 4 : 0].fields;
+			p.classCol = plan_format[tennis ? 4 : 0].classCol;
 			d = $(document.createElement("div"));
 			aa = data.Aktueller_Spielplan.vorherige_Spiele;
 			show_table(d[0], aa, p);
 			$(div).append(d);
 		}
 		// show Tabelle
-		if (data.Tabelle || data.Aktueller_Spielplan && data.Aktueller_Spielplan.Tabelle) {
+		if (data.Aktueller_Spielplan && data.Aktueller_Spielplan.Tabelle) {
+			tennis = +data.Aktueller_Spielplan.Tennis.$;
 			d = $(document.createElement("div"));
-			p.header = p.tabellenkopf || "Platz;Mannschaft;Spiele;g;u;v;Tore;Diff;Punkte";
-			p.fields = p.tabellenspalten || "Platz;Team_Kurzname;Spiele;SpieleGewonnen;SpieleUnentschieden;SpieleVerloren;PlusTore+%:+MinusTore;DiffTore;PlusPunkte+%:+MinusPunkte";
-			p.classCol = p.tabellenformat || "r;l;c;c;c;c;c;c;c;c";
+			if (tennis) {
+				p.header = p.tabellenkopf || "Platz;Mannschaft;Beg.;S;U;N;Punkte;MatchP;S\xe4tze;Spiele";
+				p.fields = p.tabellenspalten || "Platz;Team_Kurzname;Spiele;SpieleGewonnen;SpieleUnentschieden;SpieleVerloren;PlusPunkte+%:+MinusPunkte;PlusMatchPunkte+%:+MinusMatchPunkte;PlusSaetze+%:+MinusSaetze;PlusSpiele+%:+MinusSpiele";
+				p.classCol = p.tabellenformat || "r;l;c;c;c;c;c;c;c;c";
+			} else {
+				p.header = p.tabellenkopf || "Platz;Mannschaft;Spiele;S;U;N;Tore;Diff;Punkte";
+				p.fields = p.tabellenspalten || "Platz;Team_Kurzname;Spiele;SpieleGewonnen;SpieleUnentschieden;SpieleVerloren;PlusTore+%:+MinusTore;DiffTore;PlusPunkte+%:+MinusPunkte";
+				p.classCol = p.tabellenformat || "r;l;c;c;c;c;c;c;c";
+			}
 			if (+p.minitab) {
 				p.header = "Platz;Mannschaft;Punkte";
 				p.fields = "Platz;Team_Kurzname;PlusPunkte";
 				p.classCol = "r;l;c";
 			}
-			show_table(d[0], (data.Tabelle || data.Aktueller_Spielplan).Tabelle, p);
+			show_table(d[0], data.Aktueller_Spielplan.Tabelle, p);
 			// delete unwanted rows
 			// welche Spalte hat denn den Platz, nicht das wir zuviel löschen
 			var sp = $.inArray("Platz", p.fields.split(/;/));
@@ -167,22 +175,6 @@ jQuery(document).ready(function($){
 			}
 			if (+p.keineex > 0) {
 				$(d).find("tr.srs").find("td.srs:eq("+sp+"):contains('255')").parents("tr.srs").remove();
-			}
-			// sort, since ISS3 does not always return the table sorted
-			if (0) {
-			var st = $(d).find("tr:gt(0)").get(); // first row contains header, do not sort
-			$.each(st, function(i, val) {
-				val.tabellen_rang = parseInt($(val).find("td:eq("+sp+")").text());
-			});
-			st.sort(function(a, b) {
-				if (a.tabellen_rang < b.tabellen_rang) return -1;
-				if (a.tabellen_rang > b.tabellen_rang) return 1;
-				return 0;
-			});
-			$.each(st, function(i, val) {
-				val.tabellen_rang = null;
-				$(d).find("table").append(val);
-			});
 			}
 			$(div).append(d);
 		} else if (data.Teams) {
@@ -197,9 +189,10 @@ jQuery(document).ready(function($){
 		}
 		// show kommende_Spiele
 		if (p.auchspiele > 0 && data.Aktueller_Spielplan && data.Aktueller_Spielplan.kommende_Spiele) {
-			p.header = "Datum;Zeit;Heim;Gast;Tore";
-			p.fields = "SpieldatumTag/^..(..).(..).(..)$/$3.$2.$1;Spieldatum!11!5;HeimTeam_Name_kurz;GastTeam_Name_kurz;Heim+%:+Gast";
-			p.classCol = "l;l;l;l;c;c";
+			tennis = +data.Aktueller_Spielplan.Tennis.$;
+			p.header = plan_format[tennis ? 4 : 0].header;
+			p.fields = plan_format[tennis ? 4 : 0].fields;
+			p.classCol = plan_format[tennis ? 4 : 0].classCol;
 			d = $(document.createElement("div"));
 			show_table(d[0], data.Aktueller_Spielplan.kommende_Spiele, p);
 			$(div).append(d);
@@ -309,18 +302,25 @@ jQuery(document).ready(function($){
 		"header": "Datum;Zeit;Liga;Heim;Gast;Ergebnis",
 		"fields": "Spieldatum/^..(..).(..).(..).*/$3.$2.$1;Spieldatum/.*T(..:..).*/$1;Liga_Name_kurz;HeimTeam_Name_kurz;GastTeam_Name_kurz;Heim+%:+Gast@sbb",
 		"classCol": "l;c;l;l;l;c"
-		}
+		},
+		{ // alles fuer plan Tennis
+		"header": "Datum;Zeit;Heim;Gast;MatchPunkte;S\xe4tze;Spiele",
+		"fields": "Spieldatum/^..(..).(..).(..).*/$3.$2.$1;Spieldatum/.*T(..:..).*/$1;HeimTeam_Name_kurz;GastTeam_Name_kurz;Heim+%:+Gast@sbb;Saetze_Heim+%:+Saetze_Gast;Spiele_Heim+%:+Spiele_Gast",
+		"classCol": "l;c;l;l;c;c;c"
+		},
 		];
 	// einen Plan als table ausgeben
 	var show_plan = function(div, data, p) {
 		var o = $(div);
-		var d, dd;
+		var d, dd, tennis;
 		o.find(".srsLaden").remove();
 		if (data && data.error && data.error.$) {$(div).append(data.error.$); return;}
 		if (data && data.Spielplan && data.Spielplan.Spielplan) {
+			tennis = +data.Spielplan.Tennis.$;
 			d = 0; 
-			if (p.spielplanverein) d = 1;
-			if (+p.ohnehalle) d += 2;
+			if (p.spielplanverein && !tennis) d = 1;
+			if (+p.ohnehalle && !tennis) d += 2;
+			if (tennis) d = 4;
 			p.header = p.tabellenkopf || plan_format[d].header;
 			p.fields = p.tabellenspalten || plan_format[d].fields;
 			p.classCol = p.tabellenformat || plan_format[d].classCol;
@@ -469,3 +469,4 @@ jQuery(document).ready(function($){
 		return o;
 	}
 });
+

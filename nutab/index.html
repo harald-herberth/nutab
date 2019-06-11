@@ -58,6 +58,7 @@ mit Staffel, eigentlich bezieht sich Tabelle und Spielplan immer auf eine
 Staffel.</p>
 <h1>Änderungen</h1>
 <dl>
+	<li>2019-06-10: Unterstützung für Tennis (Tabelle und Spielplan. Vereinsspielplan wird nicht unterstützt)
 	<li>2019-02-08: srsNeueVorne eingeführt um Vereinsspielplan verkehrt zu sortieren. Andere Sportarten als Handball duch srsSportart (zB DARTDE) eingeführt
 	<li>2018-07-22: Erste OpenSource Version, losgelöst von dem ursprünglichen Server
 	<li>2017-08-29: Link auf Spielbericht durch @sbb. Default als Link am Ergebnis.
@@ -156,20 +157,21 @@ gewählt werden)</p>
     <td>Für jede Spalte ein Wert aus (l,r,c), durch ; getrennt</td>
   </tr>
 </table>
-<p>&nbsp;Anzeige der Spalten selber steuern</p>
+<p>&nbsp;Anzeige der Spalten selber steuern (Spaltennamen durch ";" trennen)</p>
     &lt;div class=&quot;srsTab&quot; srsurl=&quot;...&quot; srsVerein=&quot;Zirndorf&quot;
     srsTabellenKopf=&quot;M;Pl&quot; srsTabellenSpalten=&quot;Team_Kurzname;Platz&quot;
     srsTabellenFormat=&quot;l;c&quot;&gt;&lt;/div&gt;<p>Spaltennamen sind die
-    folgenden Feldnamen::&nbsp;<br>
-Platz, Team_Kurzname, PlusPunkte, MinusPunkte, Spiele,
+    folgenden Feldnamen:&nbsp;<br>
+Platz, Team_Kurzname, PlusPunkte, MinusPunkte, Spiele (sind die Begegnungen),
     SpieleGewonnen, SpieleUnentschieden, SpieleVerloren, PlusTore, MinusTore, DiffTore<br>
+    Für Tennis noch: PlusMatchPunkte, MinusMatchPunkte, PlusSaetze, MinusSaetze, PlusSpiele, MinusSpiele<br>
     <br>
 TabellenFormat: gibt für die Spalte an, ab links (l), rechtbündig (r),
     oder zentriert (c)</p>
     <p>Der Inhalt einer Spalte kann auch eine &quot;Formel&quot; sein, die sich
     auf eine oder mehrere Felder von oben beziehen können. </p>
     <ul>
-      <li>Verketten mehrer Felder in einer Spalte: srsTabellenSpalten=&quot;Platz;Team_Kurzname+%
+      <li>Verketten mehrer Felder in einer Spalte durch ein "+": srsTabellenSpalten=&quot;Platz;Team_Kurzname+%
         Tore +PlusTore&quot;</li>
       <li>Konstanten: starten mit %, ansonsten ist es ein Feldname</li>
       <li>Substring: feldname!start!len: Team_Kurzname!2!2: liefert 2
@@ -278,10 +280,13 @@ gewählt werden)</p>
   </tr>
 </table>
 <p>Spaltennamen sind die
-    folgenden Feldnamen::&nbsp;<br>
+    folgenden Feldnamen:&nbsp;<br>
  Liga_Nummer, Liga_Name_kurz, Liga_Name_lang, Spieldatum (Form
     2008-05-03T17:45:00+02:00), Spieltag, SpieldatumTag (Form 2008.05.03), Spielnummer, HeimTeam_Name_lang, HeimTeam_Name_kurz, GastTeam_Name_lang, GastTeam_Name_kurz, Halle_Nummer, Halle_Kuerzel,
-    Halle_Abk, Punkte_Heim, Tore_Heim, Punkte_Gast, Tore_Gast, sbb</p>
+    Halle_Abk, Punkte_Heim, Tore_Heim, Punkte_Gast, Tore_Gast, sbb<br>
+    Für Tennis noch: MatchPunkte_Heim, MatchPunkte_Gast, Saetze_Heim, Saetze_Gast, Spiele_Heim, Spiele_Gast
+    
+</p>
 <p>&nbsp;</p>
 <h1>Gesamtspielplan eines Vereins (srsPlanVerein)</h1>
 <p>Der Gesamt-Spielplan eines Vereins kann folgendermaßen eingebunden werden:<br>
@@ -310,6 +315,7 @@ gewählt werden)</p>
 	    <br>
 	    Dies ist in der URL (WebObjects/nuLigaDARTDE.woa/wa/) der Teil zwischen nuLiga und .woa, der dort DARTDE sein wird.
 	    Falls nicht angegeben wird HBDE (also Handball) genommen.
+	    <br>Gibt es bei Tennis nicht, dort sollte man srsPlanVerein also nicht nehmen
 	</td>
   </tr>
 </table>

@@ -242,9 +242,9 @@ if ($spielplanverein) {
 if ($u && ($gruppe || $club)) {
 	if ($spielplan) {
 		if ($verband) 
-		$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=vorrunde&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
+		$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
 		else
-		$u = "http://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?displayTyp=vorrunde&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
+		$u = "http://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
 		if ($aktuell) $u .= "&aktuell=1";
 	}
 	// von nuliga lesen
@@ -254,23 +254,21 @@ if ($u && ($gruppe || $club)) {
 		goto cache_err;
 	}
 	if (!$r) {
-		$nu = new NuLiga;
 		if ($spielplan) {
-			$r = $nu->get($u, $u);
-			$u2 = str_replace("vorrunde", "rueckrunde", $u);
-			$r .= $nu->get($u2, $u2);
 			$tab = new NuPlan2;
 			$tab->set_base($u);
 			if ($aktuell) $tab->set_aktuell(true);
 		} else {
-			$r = $nu->get($u, $u);
 			if ($spielplanverein) {
 				$tab = new NuPlan;
 				$tab->set_base($u);
 			} else {
 				$tab = new NuTab;
+				$tab->set_base($u);
 			}
 		}
+		$nu = new NuLiga;
+		$r = $nu->get($u, $u);
 		$tab->init($r);
 		$r = $tab->get_xml();
 		put_cache($u, $r);
