@@ -6,19 +6,13 @@
 </head>
 <body>
 
-<h1>Einbinden der nuLiga-Handball-Tabellen und Spielpläne in eigene Internet-Seiten</h1>
+<h1>Einbinden der (Handball) nuLiga-Tabellen und Spielplänen in eigene Vereins-Internet-Seiten</h1>
 
-<p>Wolltet ihr schon immer&nbsp;eine aktuelle Tabelle in eure eigenen
-Internet-Seiten einbauen? Dann bietet sich hier die Möglichkeit dazu an. 
+<p>Wolltet ihr schon immer&nbsp;eine aktuelle Tabelle/Spielplan in eure eigenen
+Vereins-Internet-Seiten einbauen? Dann bietet sich hier die Möglichkeit dazu an. 
 <br>Jede in nuLiga geführte Tabelle (im Prinzip nicht nur für Handball, sondern auch für andere Sportarten) kann mit einfachsten Mitteln in die eigene Seite
 eingebaut werden, angezeigt wird die Tabelle in einer platzsparenden Form, die
 weitgehenst an die eigenen Bedürfnisse angepasst werden kann.&nbsp;</p>
-<p>Q: Warum geht meine Vereinsseite in Mittelfranken oder dem Bayerischen Handballverband nach der Umstellung nicht mehr?<br>
-A: Die OpenSpource Version kommt ohne Datenbank auf dem Server aus. Damit können die alten Parameter srsKlasse, srsLiganummer, srsVerein
-nicht mehr auf die dafür passenden nuLiga URL-Parameter abgebildet werden.
-Also kann jetzt nur noch srsURL und srsClub und srsVerband zur Identifikation verwendet werden.
-Details siehe Beschreibung weiter unten.
-</p>
 <p>Q: Welche Grundsvoraussetzungen muss mein Webserver erfüllen?<br>
 A: &lt;script&gt; -Tags müssen erlaubt sein. Dies ist in den meisten Servern
 möglich, in Foren in der Regel allerdings nicht</p>
@@ -51,13 +45,20 @@ vielleicht bringe ich ja das unter. Oder schickt mir eure Version, wenn die
 Wollt ihr das aber trotzdem tun, tabellen.js kopieren, anpassen, auf dem eigenen Server speichern, und von
 dort laden. Auch in diesem Fall können die Tabellen über
 den "fetch_table" Server geladen werden.&nbsp;</p>
+<p>Q: Warum geht meine Vereinsseite in Mittelfranken oder dem Bayerischen Handballverband nach der Umstellung nicht mehr?<br>
+A: Die OpenSpource Version kommt ohne Datenbank auf dem Server aus. Damit können die alten Parameter srsKlasse, srsLiganummer, srsVerein
+nicht mehr auf die dafür passenden nuLiga URL-Parameter abgebildet werden.
+Also kann jetzt nur noch srsURL und srsClub und srsVerband zur Identifikation verwendet werden.
+Details siehe Beschreibung weiter unten.
+</p>
 <p>SRS ist historisch als Abkürzung von Schiedsrichter-Seiten entstanden.</p>
 <p>Staffel und Liga wird in dieser Beschreibung gleichwertig verwendet. In
 nuLiga besteht eine Liga aus mehreren Staffeln. Ich verwende Liga gleichwertig
 mit Staffel, eigentlich bezieht sich Tabelle und Spielplan immer auf eine
-Staffel.</p>
+Staffel (group in nuLiga).</p>
 <h1>Änderungen</h1>
 <dl>
+	<li>2019-06-23: Tennis Vereinsspielplan und Tennis Team-Tabelle geht jetz auch. Jede Tabelle kann über srsClass=xxx mit einer CSS Klasse versehen werden
 	<li>2019-06-10: Unterstützung für Tennis (Tabelle und Spielplan. Vereinsspielplan wird nicht unterstützt)
 	<li>2019-02-08: srsNeueVorne eingeführt um Vereinsspielplan verkehrt zu sortieren. Andere Sportarten als Handball duch srsSportart (zB DARTDE) eingeführt
 	<li>2018-07-22: Erste OpenSource Version, losgelöst von dem ursprünglichen Server
@@ -105,8 +106,9 @@ gewählt werden)</p>
   <tr>
     <td>srsURL</td>
     <td>URL auf Tabelle der Liga in nuLiga.<br>
-      zB srsURL=&quot;<a href="http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226">http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226</a>&quot;<br>
-      Bitte auf jeden Fall nur http, ohne https!<br>
+      zB srsURL=&quot;<a href="https://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=MF+2019%2F20&group=246367">https://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=MF+2019%2F20&group=246367</a>&quot;<br>
+      Für Tennis ist auch die URL auf die Team-Seite möglich, dann wird die Tabelle der Mannschaft ausgegeben, und nicht die Tabelle der Liga.<br>
+      zB "<a href="https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22">https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22</a>"
   </tr>
 </table>
 <p>&nbsp;Optionale Parameter</p>
@@ -156,6 +158,10 @@ gewählt werden)</p>
     <td>srsTabellenFormat</td>
     <td>Für jede Spalte ein Wert aus (l,r,c), durch ; getrennt</td>
   </tr>
+  <tr>
+    <td>srsClass</td>
+    <td>CSS Klasse für diese Tabelle. Damit kann dann sehr spezifisch mittels CSS formatiert werden. Beispiel: srsClass="myTable"</td>
+  </tr>
 </table>
 <p>&nbsp;Anzeige der Spalten selber steuern (Spaltennamen durch ";" trennen)</p>
     &lt;div class=&quot;srsTab&quot; srsurl=&quot;...&quot; srsVerein=&quot;Zirndorf&quot;
@@ -165,6 +171,7 @@ gewählt werden)</p>
 Platz, Team_Kurzname, PlusPunkte, MinusPunkte, Spiele (sind die Begegnungen),
     SpieleGewonnen, SpieleUnentschieden, SpieleVerloren, PlusTore, MinusTore, DiffTore<br>
     Für Tennis noch: PlusMatchPunkte, MinusMatchPunkte, PlusSaetze, MinusSaetze, PlusSpiele, MinusSpiele<br>
+    Für Tennis Team-Tabelle noch: PlusEinzel, MinusEinzel, PlusDoppel, MinusDoppel, PlusGesamt, MinusGesamt<br>
     <br>
 TabellenFormat: gibt für die Spalte an, ab links (l), rechtbündig (r),
     oder zentriert (c)</p>
@@ -198,8 +205,9 @@ gewählt werden)</p>
   <tr>
     <td>srsURL</td>
     <td>URL auf Tabelle der Liga in nuLiga.<br>
-      zB srsURL=&quot;<a href="http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226">http://bremerhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=Bremer+HV+14%2F15&amp;group=176226</a>&quot;<br>
-      Bitte auf jeden Fall nur http, ohne https!<br>
+      zB srsURL=&quot;<a href="https://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=MF+2019%2F20&group=246367">https://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=MF+2019%2F20&group=246367</a>&quot;<br>
+      Für Tennis ist auch die URL auf die Team-Seite möglich, dann wird der Spielplan der Mannschaft ausgegeben, und nicht der Spielplan der Liga.<br>
+      zB "<a href="https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22">https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22</a>"
   </tr>
 </table>
 <p>&nbsp;Optionale Parameter</p>
@@ -277,6 +285,10 @@ gewählt werden)</p>
   <tr>
     <td>srsMaxZeilen</td>
     <td>Beschränkt die Anzahl der Zeilen (Spiele)</td>
+  </tr>
+  <tr>
+    <td>srsClass</td>
+    <td>CSS Klasse für diese Tabelle. Damit kann dann sehr spezifisch mittels CSS formatiert werden. Beispiel: srsClass="myTable"</td>
   </tr>
 </table>
 <p>Spaltennamen sind die
@@ -388,6 +400,10 @@ gewählt werden)</p>
   <tr>
     <td>srsMaxZeilen</td>
     <td>Beschränkt die Anzahl der Zeilen (Spiele)</td>
+  </tr>
+  <tr>
+    <td>srsClass</td>
+    <td>CSS Klasse für diese Tabelle. Damit kann dann sehr spezifisch mittels CSS formatiert werden. Beispiel: srsClass="myTable"</td>
   </tr>
 </table>
 <h1>Spielplan in einer Halle (srsPlanHalle)</h1>

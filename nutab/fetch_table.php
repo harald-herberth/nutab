@@ -54,8 +54,9 @@ if (1 and !ini_get('register_globals')) {
 	unset($superglobal);
 	unset($superglobals);
 }
+ini_set("default_charset","ISO8859-1");
 // damit preg_match_all auch für lange strings geht
-ini_set("pcre.backtrack_limit","2000000");
+ini_set("pcre.backtrack_limit","8000000");
 
 ob_start(); // damit warnings nicht in das XML kommen
 
@@ -102,7 +103,7 @@ function clear_cache() {
 		$f = "cache/" . $f;
 		if (is_file($f)) {
 			if (filemtime($f) + 600 < $tt) {
-				unlink($f);
+				@unlink($f);
 				//write_log($f);
 			}
 		}
@@ -185,6 +186,7 @@ class NuLiga {
 		return $r;
 	}
 }
+
 // replace utf encoding to regular "ascii"
 function rutf($s) {
 	$s = utf8_decode($s);
@@ -196,9 +198,10 @@ function rutf($s) {
 }
 
 // url zu nuliga kann direkt angegenen sein
+$team = "";
 if ($url) {
 	$url = str_replace("https:", "http:", $url);
-	if (preg_match(';^http://(.*?)\.liga\.nu/.*?\/nuLiga(.*?)\.woa.*?championship=(.*?)&group=(\d+);i', $url, $x)) {
+	if (preg_match(';^http://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?groupPage\?championship=(.*?)&group=(\d+);i', $url, $x)) {
 		// Tabelle für diese Gruppe
 		$verband = $x[1];
 		$sportart = $x[2];
@@ -206,6 +209,15 @@ if ($url) {
 		$gruppe = $x[4];
 		$url = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."&group=$gruppe";
 		//ex($url);die;
+	} else if (preg_match(';^http://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?teamPortrait\?team=(.*?)&championship=(.*?)&group=(\d+);i', $url, $x)) {
+		//http://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22
+		// Tabelle für dieses Team (Tennis)
+		$verband = $x[1];
+		$sportart = $x[2];
+		$team = $x[3];
+		$cs = urldecode($x[4]);
+		$gruppe = $x[5];
+		$url = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?team={$team}&championship=".urlencode($cs)."&group=$gruppe";
 	} else {
 		//print_r("else ".$url);die;
 		$url = "";
@@ -214,10 +226,10 @@ if ($url) {
 	$spielplanverein = 0;
 }
 
+if (!$verband) $verband = "bhv-handball";
 if (!$sportart) $sportart = "HBDE";
 if ($spielplanverein) {
 	$spielplan = 0;
-	if (!$verband) $verband = "bhv-handball";
 	$club = (int) $club;
 	if ($alle) {
 		// automatisch auf aktuelle Saison
@@ -237,14 +249,12 @@ if ($spielplanverein) {
 	$ss = $s; $ee = $e;
 	if ($s and $e) $s = "&searchTimeRangeFrom=$s&searchTimeRangeTo=$e"; else $s = "";
 	$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/clubMeetings?searchTimeRange=2&searchType=1{$s}&club={$club}&searchMeetings=Suchen";
+	//die($u);
 }
 
 if ($u && ($gruppe || $club)) {
 	if ($spielplan) {
-		if ($verband) 
-		$u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
-		else
-		$u = "http://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
+		if (!$team) $u = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
 		if ($aktuell) $u .= "&aktuell=1";
 	}
 	// von nuliga lesen
