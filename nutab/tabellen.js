@@ -211,10 +211,9 @@ jQuery(document).ready(function($){
 			var m;
 			// get all attributes srs*
 			$.each([
-				"srsTitle","srsVerein","srsGruppe","srsKlasse","srsMinitab","srsAuchSpiele","srsKeineAK", "srsKeineEx", 
-				"srsLigaNummer",
-				"srsURL", "srsTabellenSpalten", "srsTabellenKopf", 
-				"srsTabellenFormat", "srsClass"
+				"srsURL", 
+				"srsTitle","srsVerein","srsMinitab","srsAuchSpiele","srsKeineAK", "srsKeineEx", 
+				"srsTabellenSpalten", "srsTabellenKopf", "srsTabellenFormat", "srsClass"
 				], function(i, val) {
 				var m = val.match(/^srs(.*)/);
 				if (m && o.attr(val)) {p[m[1].toLowerCase()] = o.attr(val); }
@@ -253,10 +252,11 @@ jQuery(document).ready(function($){
 		var m;
 		// get all attributes srs*
 		$.each([
-			"srsTitle","srsVerein","srsGruppe","srsKlasse", "srsAlle", "srsHeimGast",
-			"srsLigaNummer",
-			"srsURL", "srsTabellenSpalten", "srsTabellenKopf", "srsVon", "srsBis", "srsAktuell",
-			"srsTabellenFormat", "srsNurHalle", "srsOhneHalle", "srsMaxZeilen", "srsClass"
+			"srsURL", 
+			"srsTitle","srsVerein","srsAlle","srsHeimGast",
+			"srsVon", "srsBis","srsAktuell","srsNeueVorne",
+			"srsNurHalle", "srsOhneHalle", "srsMaxZeilen", "srsClass",
+			"srsTabellenSpalten", "srsTabellenKopf", "srsTabellenFormat"
 			], function(i, val) {
 			var m = val.match(/^srs(.*)/);
 			if (m && o.attr(val)) {p[m[1].toLowerCase()] = o.attr(val); }
@@ -409,10 +409,11 @@ jQuery(document).ready(function($){
 		var m;
 		// get all attributes srs*
 		$.each([
-			"srsTitle","srsAlle", "srsHeimGast", "srsVon", "srsBis", "srsNeueVorne", "srsSportart", 
-			"srsTabellenSpalten", "srsTabellenKopf", 
-			"srsClub", "srsVerband",
-			"srsTabellenFormat", "srsNurHalle", "srsOhneHalle", "srsMaxZeilen", "srsClass"
+			"srsClub", "srsVerband", "srsSportart", 
+			"srsTitle","srsVerein","srsAlle", "srsHeimGast", 
+			"srsVon", "srsBis", "srsNeueVorne", 
+			"srsNurHalle", "srsOhneHalle", "srsMaxZeilen", "srsClass",
+			"srsTabellenSpalten", "srsTabellenKopf", "srsTabellenFormat" 
 			], function(i, val) {
 			var m = val.match(/^srs(.*)/);
 			if (m && o.attr(val)) {p[m[1].toLowerCase()] = o.attr(val); }
