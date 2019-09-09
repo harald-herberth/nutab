@@ -58,6 +58,7 @@ mit Staffel, eigentlich bezieht sich Tabelle und Spielplan immer auf eine
 Staffel (group in nuLiga).</p>
 <h1>Änderungen</h1>
 <dl>
+	<li>2019-09-09: srsAuchAK eingeführt. srsClub unterstützt auch Einschränkung auf bestimmte Ligen dieses Vereins.
 	<li>2019-06-23: Tennis Vereinsspielplan und Tennis Team-Tabelle geht jetz auch. Jede Tabelle kann über srsClass=xxx mit einer CSS Klasse versehen werden
 	<li>2019-06-10: Unterstützung für Tennis (Tabelle und Spielplan. Vereinsspielplan wird nicht unterstützt)
 	<li>2019-02-08: srsNeueVorne eingeführt um Vereinsspielplan verkehrt zu sortieren. Andere Sportarten als Handball duch srsSportart (zB DARTDE) eingeführt
@@ -125,23 +126,28 @@ gewählt werden)</p>
   <tr>
     <td>srsMiniTab</td>
     <td>Es wird eine kleine Tabelle ausgegeben, nur Platz, Mannschaft, Punkte<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsAuchSpiele</td>
     <td>Vor und nach der Tabelle werden auch die letzten und nächsten Spiele
       ausgegeben<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsKeineAK</td>
     <td>Mannschaften, die außer Konkurrenz spielen, werden nicht ausgegeben<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
+  </tr>
+  <tr>
+    <td>srsAuchAK</td>
+    <td>Mannschaften, die außer Konkurrenz spielen, werden normal eingereit in der Tabelle ausgegeben<br>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsKeineEx</td>
     <td>Mannschaften, die zurückgezogen haben, werden nicht ausgegeben<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsTabellenKopf</td>
@@ -224,7 +230,7 @@ gewählt werden)</p>
   <tr>
     <td>srsAlle</td>
     <td>Zeigt in dem Spielplan die Spiele aller Mannschaften an. Sonst werden nur die Spiele des srsVerein angezeigt.<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsHeimGast</td>
@@ -251,7 +257,7 @@ gewählt werden)</p>
       die Spiele um den aktuellen Spieltag.&nbsp;<br>
       Dies ist einfacher als von/bis, v.a. wenn die Spieltage weit auseinander
       liegen.<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsNurHalle</td>
@@ -313,7 +319,12 @@ gewählt werden)</p>
       In diesem Fall muss auch der Landesverband über srsVerband angegeben
       werden, sonst wird der BHV angenommen.<br>
       Mehrere Clubs können angegeben werden, mit , getrennt<br>
-      Beispiel: &lt;div class="srsPlanVerein" srsVerband="hvn-handball" srsClub="32402" srsAlle=0 srsVon=7 srsBis=21 &gt;&lt;/div&gt;&nbsp;</td>
+      Beispiel: &lt;div class="srsPlanVerein" srsVerband="hvn-handball" srsClub="32402" srsAlle=0 srsVon=7 srsBis=21 &gt;&lt;/div&gt;&nbsp;
+      <br>
+      <br>Pro Verein kann noch eingeschränkt werden, welche Ligen dieses Vereins eingemischt werden sollen.
+      <br>Dies geschieht durch Angabe der exakten Liga-Bezeichung aus dem Vereinsspielplan, nach einem "/". Mehrere Ligen können mit ";" getrennt angegeben werden.
+      <br>Beispiel srsClub="32402,30745/LL MB;BZL WD,30777/ÜBOL WA"
+    </td>
   </tr>
   <tr>
     <td>srsVerband</td>
@@ -349,7 +360,7 @@ gewählt werden)</p>
       Siehe auch von und bis.<br>
       NuLiga erlaubt nur 200 Einträge in einer Suche nach allen Spielen eines
       Vereins, also ist srsAlle in diesem Fall nur was für kleine Vereine.<br>
-      Mögliche Werte: 0 (oder fehl), 1</td>
+      Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
     <td>srsHeimGast</td>

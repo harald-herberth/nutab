@@ -212,7 +212,7 @@ jQuery(document).ready(function($){
 			// get all attributes srs*
 			$.each([
 				"srsURL", 
-				"srsTitle","srsVerein","srsMinitab","srsAuchSpiele","srsKeineAK", "srsKeineEx", 
+				"srsTitle","srsVerein","srsMinitab","srsAuchSpiele","srsKeineAK", "srsAuchAK", "srsKeineEx", 
 				"srsTabellenSpalten", "srsTabellenKopf", "srsTabellenFormat", "srsClass"
 				], function(i, val) {
 				var m = val.match(/^srs(.*)/);
@@ -220,6 +220,7 @@ jQuery(document).ready(function($){
 				val = "data-" + val;
 				if (m && o.attr(val)) {p[m[1].toLowerCase()] = o.attr(val); }
 			});
+			if (+p.auchak > 0 && p.keineak !== undefined) p.keineak = 0;
 			if (p.title) m = "<p>"+p.title+"</p>"; else m = "";
 			if (divs.length > 1 && links.length > 0) {
 				m = "<a name=\"srs_a_"+i+"\"></a>" + m;
@@ -433,6 +434,9 @@ jQuery(document).ready(function($){
 		o.html(m+"<p class=\"srsLaden\">" + (window.srsPlanMsg || "Gesamt-Spielplan " + "" + " wird geladen") + "</p>");
 		p.spielplanverein = 1;
 		var processPart = function() {
+			var ligen = p.club.split("/");
+			p.club = ligen.shift();
+			if (ligen.length) ligen = ligen.join("").toLowerCase().split(";");
 			$.ajax({
 			    type: "GET",
 			    url: basis + "fetch_table.php",
@@ -441,7 +445,10 @@ jQuery(document).ready(function($){
 			    success: function(data, textstatus) {
 				    if (data && data.error && data.error.$) {show_plan(o.get(), data, p); return;}
 				    if (data && data.Spielplan && data.Spielplan.Spielplan) {
-					    dataAll = dataAll.concat(data.Spielplan.Spielplan);
+					    dataAll = dataAll.concat(data.Spielplan.Spielplan.filter(function(x) {
+						    if (!x.Liga_Name_kurz || ! x.Liga_Name_kurz.$) return true;
+						    return ligen.length == 0 || ligen.indexOf(x.Liga_Name_kurz.$.toLowerCase()) >= 0;
+						}));
 				    }
 				    if (clubs.length > 0) {
 					    p.club = clubs.shift();
@@ -449,7 +456,6 @@ jQuery(document).ready(function($){
 					    return;
 				    }
 				    if (dataAll.length) {
-					    //alert("neue vorne " + p.neuevorne);
 					    dataAll.sort(function(a,b) {
 						    if (a.Spieldatum.$ < b.Spieldatum.$) return (p.neuevorne > 0 ? 1 : -1);
 						    if (a.Spieldatum.$ > b.Spieldatum.$) return (p.neuevorne > 0 ? -1 : 1);

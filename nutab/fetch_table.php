@@ -18,6 +18,7 @@ spielplanverein: true sagt: gesamt-spielplan laden, nicht aktuell
 aktuell gibt es in nuLiga nicht mehr, ist aus ISS3 übriggeblieben, entfernen
 cty: content type (falls der Aufrufer was ganz spezielles braucht)
 jh: JSON header content
+auchak: in die Tabellen ist auch AK Mannschaften normal drin, und nicht am Ende mit AK
 
 Aufruf erfolgt über JSONP
 
@@ -54,9 +55,10 @@ if (1 and !ini_get('register_globals')) {
 	unset($superglobal);
 	unset($superglobals);
 }
-ini_set("default_charset","ISO8859-1");
+@ini_set("default_charset","ISO8859-1");
+@ini_set("date.timezone", "Europe/Berlin");
 // damit preg_match_all auch für lange strings geht
-ini_set("pcre.backtrack_limit","8000000");
+@ini_set("pcre.backtrack_limit","8000000");
 
 ob_start(); // damit warnings nicht in das XML kommen
 
@@ -67,6 +69,7 @@ $q = preg_replace("/_=.*?(&|$)/", "", $q);
 $callback = preg_replace('/[^a-zA-Z0-9$_.]/', "", array_key_exists("callback", $_GET) ? $_GET["callback"] : "");
 $u = "";
 $r = "";
+$auchak = (int) $auchak;
 
 // debug ausgabe
 if (!function_exists("pp")) {
@@ -192,8 +195,8 @@ function rutf($s) {
 	$s = utf8_decode($s);
 	$s = str_replace('&nbsp;', ' ', $s);
 	$s = html_entity_decode($s);
-	$s = preg_replace_callback('~&#x([0-9a-f]+);~i', function() {$x = $m[0]; return "chr(hexdec($x))";}, $s);
-	$s = preg_replace_callback('~&#([0-9]+);~', function() {$x = $m[0]; return "chr($x)";}, $s);
+	$s = preg_replace_callback('~&#x([0-9a-f]+);~i', function($m) {$x = $m[0]; return "chr(hexdec($x))";}, $s);
+	$s = preg_replace_callback('~&#([0-9]+);~', function($m) {$x = $m[0]; return "chr($x)";}, $s);
 	return $s;
 }
 
@@ -208,6 +211,7 @@ if ($url) {
 		$cs = urldecode($x[3]);
 		$gruppe = $x[4];
 		$url = "http://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."&group=$gruppe";
+		if ($auchak) $url .= "&displayTyp=gesamt&displayDetail=tableWithIgnoredTeams";
 		//ex($url);die;
 	} else if (preg_match(';^http://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?teamPortrait\?team=(.*?)&championship=(.*?)&group=(\d+);i', $url, $x)) {
 		//http://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22
