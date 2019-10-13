@@ -384,22 +384,28 @@ function init($s) {
 	if (preg_match(';Matchpunkte.*Sätze;ismU', $rows[0])) $tennis = 1; 
 	else if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 2; 
 	else $tennis = 0;
+	$spielort = 0;
+	if ($tennis && preg_match(';Spielort;ismU', $rows[0])) $spielort = 1;
 	array_shift($rows);
 	$datum = date("d.m.Y");
 	foreach($rows as $row) {
 		// tag, datum, zeit, halle, [Nr,] Heim, Gast, sr/tore(oder wertung), Bericht, genehmigt?
 		//  0     1      2    3      4     5      6       7                     8      9
 		// wenn nur die <th> header, oder nur ein <td> bei Pokal die Runde, => weiter
+		//
 		// bei Dart (wie Handball, ohne Spielnummer)
 		// tag, datum, zeit, Halle, Heim, Gast, Spiele(Wertung), Bericht
-		// bei tennis
-		// tag, datum-zeit, , Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
-		// tag, datum, zeit, , ,  Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
-		//  0,    1    2    3 4     5    6       7          8       9       10
-		// bei tennis spieltermine Team Seite (aufbau seite, wir spleissen auf gleiches Format auf)
-		// tag, datum-zeit, Heim, Gast, Matchpunkte, Bericht
-		// tag, datum, zeit, , ,  Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
-		//  0,    1    2    3 4     5    6       7          8       9       10
+		//
+		// bei tennis groupPage
+		// 1:tag, datum-zeit, , [ort,] Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
+		//                              5     6      7           8      9       10
+		//
+		// bei tennis spieltermine TeamPortrait Seite (aufbau seite, wir spleissen auf gleiches Format auf)
+		// 1:tag, datum-zeit, , [Ort,] Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
+		// 2:tag, datum-zeit, [Ort,]   Heim, Gast, Matchpunkte, Bericht
+		//                             5     6      7           8  
+		// also be Tennis kann der Spielort noch vor dem Heim stehen, dann nehmen wir ihn als Halle
+		//
 		if (2 > preg_match_all(';<td.*</td;ismU', $row, $x)) continue; 
 		$x = $x[0];
 		// bei termin offen haben wir eine Spalte weniger, und kein Datum
@@ -410,20 +416,20 @@ function init($s) {
 			$x[2] = "00:02";
 		}
 		// bei Tennis Zeit in extra Spalte und leere spalten einfügen
-		if ($tennis == 1) {
+		if ($tennis) {
+			if ($tennis == 1) 
+				array_splice($x, 2, 1);
+			if (!$spielort) 
+				array_splice($x, 2, 0, array(""));
 			if (preg_match(';(\d\d\.\d\d\.\d\d\d\d) (\d\d:\d\d);ismU', $x[1], $xx)) {
-				array_splice($x, 1, 2, array($xx[1], $xx[2], "", ""));
+				array_splice($x, 1, 1, array($xx[1], $xx[2]));
 			} else {
-				array_splice($x, 1, 2, array($datum, $zeit, "", ""));
+				array_splice($x, 1, 1, array($datum, $zeit));
 			}
-		}
-		if ($tennis == 2) {
-			if (preg_match(';(\d\d\.\d\d\.\d\d\d\d) (\d\d:\d\d);ismU', $x[1], $xx)) {
-				array_splice($x, 1, 1, array($xx[1], $xx[2], "", ""));
-			} else {
-				array_splice($x, 1, 1, array($datum, $zeit, "", ""));
+			array_splice($x, 4, 0, array("")); // Spielnummer leer
+			if ($tennis == 2) {
+				array_splice($x, 8, 0, array("", ""));
 			}
-			array_splice($x, 8, 0, array("", ""));
 		}
 		// falls keine Spielnummer da ist, eine 0 einfügen
 		if (!$tennis && $keineSpNummer) {
@@ -542,6 +548,7 @@ function init($s) {
 	//pp($a); die;
 	$this->a = $a;
 	$this->tennis = $tennis;
+	$this->spielort = $spielort;
 	if ($this->aktuell) $this->filter();
 	//echo htmlentities($s);
 	return "";
@@ -591,6 +598,7 @@ function get_xml() {
 	if (!is_array($this->a) || !count($this->a)) return "";
 	$x = "<Spielplan>\n";
 	$x .= "<Tennis>$this->tennis</Tennis>\n";
+	$x .= "<Spielort>$this->spielort</Spielort>\n";
 	foreach($this->a as $a) {
 		$x .= "<Spielplan>\n";
 		foreach($a as $i => $v) {

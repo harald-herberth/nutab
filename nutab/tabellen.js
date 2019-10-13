@@ -436,7 +436,7 @@ jQuery(document).ready(function($){
 		var processPart = function() {
 			var ligen = p.club.split("/");
 			p.club = ligen.shift();
-			if (ligen.length) ligen = ligen.join("").toLowerCase().split(";");
+			if (ligen.length) ligen = ligen.join("/").toLowerCase().split(";");
 			$.ajax({
 			    type: "GET",
 			    url: basis + "fetch_table.php",
