@@ -384,8 +384,8 @@ function init($s) {
 	if (preg_match(';Matchpunkte.*Sätze;ismU', $rows[0])) $tennis = 1; 
 	else if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 2; 
 	else $tennis = 0;
-	$spielort = 0;
-	if ($tennis && preg_match(';Spielort;ismU', $rows[0])) $spielort = 1;
+	$spielort = 0; if ($tennis && preg_match(';Spielort;ismU', $rows[0])) $spielort = 1;
+	$platz = 0; if ($tennis && preg_match(';Platz;ismU', $rows[0])) $platz = 1;
 	array_shift($rows);
 	$datum = date("d.m.Y");
 	foreach($rows as $row) {
@@ -417,6 +417,8 @@ function init($s) {
 		}
 		// bei Tennis Zeit in extra Spalte und leere spalten einfügen
 		if ($tennis) {
+			if ($platz == 1) 
+				array_splice($x, 3, 1);
 			if ($tennis == 1) 
 				array_splice($x, 2, 1);
 			if (!$spielort) 
