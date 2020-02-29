@@ -235,8 +235,10 @@ function init($s) {
 		//Hallenbezeichnung aus dem span Tag herausholen
 		// wird dann als Halle_Name_kurz bereitgestellt
 		$hal = $x[3];
-		preg_match(';title="(.*)";ismU', $x[3], $hal_match);
-		$hal = $hal_match[1];
+		if (!$tennis) {
+			preg_match(';title="(.*)";ismU', $x[3], $hal_match);
+			$hal = $hal_match[1];
+		}
 		$sbb = $x[$tennis ? 11 : 9];
 		if (preg_match('/href="(.*?)"/', $sbb, $sbb)) {
 			$sbb = $sbb[1]; $sbb = $this->base . $sbb;
@@ -447,7 +449,7 @@ function init($s) {
 		if (!$tennis && $keineSpNummer) {
 			array_splice($x, 4, 0, array("0"));
 		}
-				$sbb = $x[$tennis ? 10 : 8];
+		$sbb = $x[$tennis ? 10 : 8];
 		if (preg_match('/href="(.*?)"/', $sbb, $sbb)) {
 			$sbb = $sbb[1]; $sbb = $this->base . $sbb;
 			$sbb = base64_encode($sbb);
@@ -457,8 +459,10 @@ function init($s) {
 		//Hallenbezeichnung aus dem span Tag herausholen
 		// wird dann als Halle_Name_kurz bereitgestellt
 		$hal = $x[3];
-		preg_match(';title="(.*)";ismU', $x[3], $hal_match);
-		$hal = $hal_match[1];
+		if (!$tennis) {
+			preg_match(';title="(.*)";ismU', $x[3], $hal_match);
+			$hal = $hal_match[1];
+		}
 		$sr = $x[7];
 		foreach ($x as $i => $v) {
 			$x[$i] = str_replace("\r\n", "", $x[$i]);
