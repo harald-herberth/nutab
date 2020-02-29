@@ -232,6 +232,11 @@ function init($s) {
 		if (!$tennis && $keineSpNummer) {
 			array_splice($x, 4, 0, array("0"));
 		}
+		//Hallenbezeichnung aus dem span Tag herausholen
+		// wird dann als Halle_Name_kurz bereitgestellt
+		$hal = $x[3];
+		preg_match(';title="(.*)";ismU', $x[3], $hal_match);
+		$hal = $hal_match[1];
 		$sbb = $x[$tennis ? 11 : 9];
 		if (preg_match('/href="(.*?)"/', $sbb, $sbb)) {
 			$sbb = $sbb[1]; $sbb = $this->base . $sbb;
@@ -254,6 +259,10 @@ function init($s) {
 		$da = "{$xx[3]}.{$xx[2]}.{$xx[1]}";
 		$dax = "{$xx[3]}-{$xx[2]}-{$xx[1]}T{$zeit}:00+0200";
 		//2008-05-03T17:45:00+02:00 2008.05.03
+		//Aus Datum, den Wochentag errechnen und als Kurzbezeichnung bereitstellen
+		//Wird als Wochentag bereitgestellt
+		$wochentage = array("So", "Mo", "Di", "Mi", "Do", "Fr", "Sa");
+		$wochentag = date('w', strtotime($dax));
 		$halle_nr = (int) $x[3];
 		$halle = $x[3];
 		$tore_heim = "";
@@ -286,6 +295,7 @@ function init($s) {
 			"Liga_Name_lang" => $x[5],
 			"Spieldatum" => $dax,
 			"Spieltag" => "",
+			"Wochentag" => $wochentage[$wochentag],
 			"SpieldatumTag" => $da,
 			"Spielnummer" => $x[4],
 			"HeimTeam_Name_lang" => $x[6],
@@ -296,7 +306,7 @@ function init($s) {
 			"Gast_ak" => "",
 			"Halle_Nummer" => $halle_nr,
 			"Halle_Name_lang" => "",
-			"Halle_Name_kurz" => "",
+			"Halle_Name_kurz" => $hal,
 			"Halle_Kuerzel" => $halle,
 			"Halle_Abk" => $halle_abk,
 			"Punkte_Heim" => "",
@@ -437,13 +447,18 @@ function init($s) {
 		if (!$tennis && $keineSpNummer) {
 			array_splice($x, 4, 0, array("0"));
 		}
-		$sbb = $x[$tennis ? 10 : 8];
+				$sbb = $x[$tennis ? 10 : 8];
 		if (preg_match('/href="(.*?)"/', $sbb, $sbb)) {
 			$sbb = $sbb[1]; $sbb = $this->base . $sbb;
 			$sbb = base64_encode($sbb);
 			if (!$this->base) $sbb = "";
 		} else $sbb = "";
 		//pp($sbb);die;
+		//Hallenbezeichnung aus dem span Tag herausholen
+		// wird dann als Halle_Name_kurz bereitgestellt
+		$hal = $x[3];
+		preg_match(';title="(.*)";ismU', $x[3], $hal_match);
+		$hal = $hal_match[1];
 		$sr = $x[7];
 		foreach ($x as $i => $v) {
 			$x[$i] = str_replace("\r\n", "", $x[$i]);
@@ -463,7 +478,11 @@ function init($s) {
 		preg_match(';(\d\d)\.(\d\d)\.(\d\d\d\d);ismU', $datum, $xx);
 		$da = "{$xx[3]}.{$xx[2]}.{$xx[1]}";
 		$dax = "{$xx[3]}-{$xx[2]}-{$xx[1]}T{$zeit}:00+0200";
-		//2008-05-03T17:45:00+02:00 2008.05.03
+		//2008-05-03T17:45:00+02:00
+		//Aus Datum, den Wochentag errechnen und als Kurzbezeichnung bereitstellen
+		//Wird als Wochentag bereitgestellt
+		$wochentage = array("So", "Mo", "Di", "Mi", "Do", "Fr", "Sa");
+		$wochentag = date('w', strtotime($dax));
 		$x[5] = str_replace("'","",$x[5]);
 		$x[6] = str_replace("'","",$x[6]);
 		$halle_nr = (int) $x[3];
@@ -507,6 +526,7 @@ function init($s) {
 			"Liga_Name_lang" => "todo",
 			"Spieldatum" => $dax,
 			"Spieltag" => 0,
+			"Wochentag" => $wochentage[$wochentag],
 			"SpieldatumTag" => $da,
 			"SpielZeit" => $zeit,
 			"Spielnummer" => $spn,
@@ -518,7 +538,7 @@ function init($s) {
 			"Gast_ak" => "",
 			"Halle_Nummer" => $halle_nr,
 			"Halle_Name_lang" => "",
-			"Halle_Name_kurz" => "",
+			"Halle_Name_kurz" => $hal,
 			"Halle_Kuerzel" => $halle,
 			"Halle_Abk" => $halle_abk,
 			"Punkte_Heim" => "",
