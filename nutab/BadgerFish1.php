@@ -86,9 +86,11 @@ class BadgerFish
         if ($data instanceof \SimpleXMLElement) {
             $attrs = $data->attributes();
             $children = $data->children();
-            if (count($attrs)==0 && count($children)==0) {
-                return self::badgerfy((string)$data);
-            }
+	    //harald: die $ kommt nie, wenn man das drin lässt
+	    //dies ist Versio 1.2.3
+            //if (count($attrs)==0 && count($children)==0) {
+                //return self::badgerfy((string)$data);
+            //}
             if (count($attrs)) {
                 foreach ($attrs as $aname => $avalue) {
                     $return["@$aname"] = self::badgerfy($avalue);
@@ -111,7 +113,8 @@ class BadgerFish
                     }
                 }
             } else {
-                $return['$'] = self::badgerfy((string)$data);
+                $return['$'] = (string)$data;
+                //$return['$'] = self::badgerfy((string)$data);
             }
         } elseif (\is_object($data)) {
             foreach ((array)$data as $key => $value) {

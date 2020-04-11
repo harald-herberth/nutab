@@ -339,12 +339,10 @@ if ($jn) {
 		$r = "";
 	}
 } else {
-	require_once("BadgerFish.php");
-	$f = new BadgerFish;
-	$doc = new DOMDocument();
+	require_once("BadgerFish1.php");
+	$f = new \Imperium\BadgerFish();
 	try {
-	$doc->loadXML($r);
-	$r = $f->encode($doc);
+	$r = $f->xmlToJson($r);
 	} catch (Exception $e) {
 		$r = "";
 	}
