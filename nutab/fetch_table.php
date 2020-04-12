@@ -20,16 +20,11 @@ cty: content type (falls der Aufrufer was ganz spezielles braucht)
 jh: JSON header content
 auchak: in die Tabellen ist auch AK Mannschaften normal drin, und nicht am Ende mit AK
 
-Aufruf erfolgt über JSONP
-
-Todo:
-Umstellen von JSONP auf XHR (dann aber mit CORS, damit andere Vereine das auch nutzen koennen)
-Umstellen von Badgerfish auf normals JSON (das ist auch noch aus ISS3 Zeiten da)
-Verwenden des eingebauten JSON
+Aufruf erfolgt über JSONP oder XHR und CORS
 
 */
 error_reporting(E_ALL & ~(E_NOTICE|E_WARNING|E_DEPRECATED));
-error_reporting(E_ALL & ~(E_NOTICE|E_DEPRECATED));
+//error_reporting(E_ALL & ~(E_NOTICE|E_DEPRECATED));
 @ini_set("display_errors", "1");
 
 // zum testen kann der Cache auch mal disabled werden. 
@@ -331,18 +326,20 @@ if (!$u) $r = "<error>Keine URL angegeben</error>";
 error_reporting(E_ALL & ~(E_NOTICE|E_WARNING));
 if ($jn) {
 	try {
-	$doc = new SimpleXMLElement($r);
-	$r = json_encode($doc);
+	$r = new SimpleXMLElement($r);
+	$r = json_encode($r);
 	// empty objects to empty strings {} => ""
 	$r = str_replace("{}", '""', $r);
 	} catch (Exception $e) {
 		$r = "";
 	}
 } else {
-	require_once("BadgerFish1.php");
-	$f = new \Imperium\BadgerFish();
 	try {
-	$r = $f->xmlToJson($r);
+	$r = "<wrapper>$r</wrapper>"; // topmost node geht verloren, für $jn pfad ändern wir das nicht, wegen kompatibel
+	$r = new SimpleXMLElement($r);
+	$r = json_encode($r);
+	// empty objects to empty strings {} => ""
+	$r = str_replace("{}", '""', $r);
 	} catch (Exception $e) {
 		$r = "";
 	}
@@ -350,10 +347,7 @@ if ($jn) {
 //print_r($r); die;
 
 if (!$r or $r == "[]") {
-	if ($jn)
 	$r = '{"error": "Keine gueltigen Daten unter dieser Adresse"}';
-	else
-	$r = '{"error": {"$":"Keine gueltigen Daten unter dieser Adresse"}}';
 	//@unlink("cache/nu_state.txt");
 }
 // set content type

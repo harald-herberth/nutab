@@ -70,7 +70,7 @@ jQuery(document).ready(function($){
 					href = f.split(/@/);
 					f = href[0];
 					href = href[1];
-					href = (val[href] && val[href].$ ? val[href].$ : '');
+					href = (val[href] ? val[href] : '');
 					if (href) href = atob(href);
 				}
 				fe = f.split(/\+/);
@@ -81,7 +81,7 @@ jQuery(document).ready(function($){
 						fev = fe[i].substr(1);
 					else {
 						ff = fe[i].split(/\/|!|\xa7/); // xa7 = §
-						fev = (val[ff[0]] && val[ff[0]].$ ? val[ff[0]].$ : '');
+						fev = (val[ff[0]] ? val[ff[0]] : '');
 						if (fev.length > 0) allnull = false;
 						// is there a pattern match and replace in the field expression (field/pat/replace)
 						ff = fe[i].split(/\//);
@@ -133,12 +133,12 @@ jQuery(document).ready(function($){
 	var show_tables = function(div, data, p) {
 		$(div).find(".srsLaden").remove();
 		if (!data) return;
-		if (data.error && data.error.$) {$(div).append(data.error.$); return;}
+		if (data.error) {$(div).append(data.error); return;}
 		if (+p.minitab) p.auchspiele = "";
 		var d; // temporary div to hold one table
 		var aa;
 		var tennis;
-		tennis = +(data.Aktueller_Spielplan.Tennis ? data.Aktueller_Spielplan.Tennis.$ : 0);
+		tennis = +(data.Aktueller_Spielplan.Tennis ? data.Aktueller_Spielplan.Tennis : 0);
 		// show vorherige_Spiele
 		if (p.auchspiele > 0 && data.Aktueller_Spielplan && data.Aktueller_Spielplan.vorherige_Spiele) {
 			p.header = plan_format[tennis == 1 ? 4 : tennis == 2 ? 6 : 0].header;
@@ -328,9 +328,9 @@ jQuery(document).ready(function($){
 		var o = $(div);
 		var d, dd, tennis;
 		o.find(".srsLaden").remove();
-		if (data && data.error && data.error.$) {$(div).append(data.error.$); return;}
+		if (data && data.error) {$(div).append(data.error); return;}
 		if (data && data.Spielplan && data.Spielplan.Spielplan) {
-			tennis = +(data.Spielplan.Tennis ? data.Spielplan.Tennis.$ : 0);
+			tennis = +(data.Spielplan.Tennis ? data.Spielplan.Tennis : 0);
 			d = 0; 
 			if (tennis == 1) d = 4;
 			if (p.spielplanverein) d += 1;
@@ -340,11 +340,11 @@ jQuery(document).ready(function($){
 			p.fields = p.tabellenspalten || plan_format[d].fields;
 			p.classCol = p.tabellenformat || plan_format[d].classCol;
 			// filtern nach von und bis
-			if (data.Spielplan.von && data.Spielplan.bis && data.Spielplan.von.$ > '' && data.Spielplan.bis.$ > '') {
+			if (data.Spielplan.von && data.Spielplan.bis && data.Spielplan.von > '' && data.Spielplan.bis > '') {
 				dd = [];
 				$.each(data.Spielplan.Spielplan, function(i, val) {
-					if (val.SpieldatumTag.$ >= data.Spielplan.von.$ 
-						&& val.SpieldatumTag.$ <= data.Spielplan.bis.$) 
+					if (val.SpieldatumTag >= data.Spielplan.von 
+						&& val.SpieldatumTag <= data.Spielplan.bis) 
 						dd.push(val);
 				});
 				data.Spielplan.Spielplan = dd;
@@ -354,7 +354,7 @@ jQuery(document).ready(function($){
 				dd = [];
 				var re = new RegExp(p.nurhalle.replace(",", "|"));
 				$.each(data.Spielplan.Spielplan, function(i, val) {
-					if (val.Halle_Kuerzel && val.Halle_Kuerzel.$ && val.Halle_Kuerzel.$.match(re)) 
+					if (val.Halle_Kuerzel && val.Halle_Kuerzel.match(re)) 
 						dd.push(val);
 				});
 				data.Spielplan.Spielplan = dd;
@@ -443,11 +443,11 @@ jQuery(document).ready(function($){
 			    data : p, 
 			    dataType: options.ajaxDataType,
 			    success: function(data, textstatus) {
-				    if (data && data.error && data.error.$) {show_plan(o.get(), data, p); return;}
+				    if (data && data.error) {show_plan(o.get(), data, p); return;}
 				    if (data && data.Spielplan && data.Spielplan.Spielplan) {
 					    dataAll = dataAll.concat(data.Spielplan.Spielplan.filter(function(x) {
-						    if (!x.Liga_Name_kurz || ! x.Liga_Name_kurz.$) return true;
-						    return ligen.length == 0 || ligen.indexOf(x.Liga_Name_kurz.$.toLowerCase()) >= 0;
+						    if (!x.Liga_Name_kurz) return true;
+						    return ligen.length == 0 || ligen.indexOf(x.Liga_Name_kurz.toLowerCase()) >= 0;
 						}));
 				    }
 				    if (clubs.length > 0) {
@@ -457,8 +457,8 @@ jQuery(document).ready(function($){
 				    }
 				    if (dataAll.length) {
 					    dataAll.sort(function(a,b) {
-						    if (a.Spieldatum.$ < b.Spieldatum.$) return (p.neuevorne > 0 ? 1 : -1);
-						    if (a.Spieldatum.$ > b.Spieldatum.$) return (p.neuevorne > 0 ? -1 : 1);
+						    if (a.Spieldatum < b.Spieldatum) return (p.neuevorne > 0 ? 1 : -1);
+						    if (a.Spieldatum > b.Spieldatum) return (p.neuevorne > 0 ? -1 : 1);
 						    return 0;
 					    });
 				    }
