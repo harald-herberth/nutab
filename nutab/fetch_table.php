@@ -30,6 +30,7 @@ error_reporting(E_ALL & ~(E_NOTICE|E_WARNING|E_DEPRECATED));
 // zum testen kann der Cache auch mal disabled werden. 
 // Man sollte aber immer mit arbeiten, weil das die Aufbauzeiten der eigenen Seiten verbessert, und die Last auf die nu Server senkt.
 define("DISABLE_CACHE", 0); 
+define("DEBUG_GET", 0); 
 
 // alle Parameter als global einlesen
 // auch dies kann man mal besser machen, wenn man will
@@ -65,12 +66,18 @@ $callback = preg_replace('/[^a-zA-Z0-9$_.]/', "", array_key_exists("callback", $
 $u = "";
 $r = "";
 $auchak = (int) $auchak;
+$auchak = 0;
 
 // debug ausgabe
 if (!function_exists("pp")) {
 function pp($v) {
 	$x = htmlspecialchars(print_r($v,true)); $x = str_replace("[","<br>[",$x); echo$x . "<br><br>";
 }
+}
+$debug_message = "";
+function dd($x) {
+	global $debug_message;
+	$debug_message .= htmlentities($x) . " ";
 }
 
 function ex($m) {
@@ -152,7 +159,7 @@ class NuLiga {
 		die("todo");
 	}
 	function get($url, $referer = "") {
-		$DEB = 0;
+		$DEB = DEBUG_GET;
 		// url muss absolut sein
 		if (!$url) throw new Exception("mit leerer URL aufgerufen");
 		if (!preg_match(';^http;i', $url)) throw new Exception("url nicht absolut: $url");
@@ -175,16 +182,17 @@ class NuLiga {
 		);
 		if ($DEB) {
 			$t1 = microtime(true); $t1s = date("H:i:s", (int)$t1); $t1m = $t1*1000%1000;
-			$handle = fopen("helper.log", 'a'); fwrite($handle, "$t1s.$t1m Get $url\r\n"); fclose($handle);
+			$handle = fopen("helper.log", 'w'); fwrite($handle, "$t1s.$t1m Get $url\r\n"); fclose($handle);
 		}
 		$r = Requests::get($url, $h, $o);
-		if ($DEB) {
-			$t1 = microtime(true); $t1s = date("H:i:s", (int)$t1); $t1m = $t1*1000%1000;
-			$handle = fopen("helper.log", 'a'); fwrite($handle, "$t1s.$t1m Got $url\r\n"); fclose($handle);
-		}
 		$this->cookies = $r->cookies;
 		$this->ref = $url;
 		$ret = rutf($r->body);
+		if ($DEB) {
+			$t1 = microtime(true); $t1s = date("H:i:s", (int)$t1); $t1m = $t1*1000%1000;
+			$handle = fopen("helper.log", 'a'); fwrite($handle, "$t1s.$t1m Got $url\r\n"); fclose($handle);
+			$handle = fopen("helper.log", 'a'); fwrite($handle, "$ret\r\n"); fclose($handle);
+		}
 		return $ret;
 	}
 }
@@ -203,24 +211,27 @@ function rutf($s) {
 $team = "";
 if ($url) {
 	$url = str_replace("http:", "https:", $url);
-	if (preg_match(';^https://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?groupPage\?championship=(.*?)&group=(\d+);i', $url, $x)) {
-		// Tabelle für diese Gruppe
+	if (preg_match(';^https://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?groupPage\?(.*);i', $url, $x)) {
+		// Tabelle/Spielplan für dieses Gruppe
 		$verband = $x[1];
 		$sportart = $x[2];
-		$cs = urldecode($x[3]);
-		$gruppe = $x[4];
+		$qs = $x[3]."&";
+		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
+		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = $x[1];
 		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."&group=$gruppe";
 		if ($auchak) $url .= "&displayTyp=gesamt&displayDetail=tableWithIgnoredTeams";
 		//ex($url);die;
-	} else if (preg_match(';^https://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?teamPortrait\?team=(.*?)&championship=(.*?)&group=(\d+);i', $url, $x)) {
-		//https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22
-		// Tabelle für dieses Team (Tennis)
+	} else if (preg_match(';^https://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?teamPortrait\?(.*);i', $url, $x)) {
+		// Tabelle/Spielplan für dieses Team
 		$verband = $x[1];
 		$sportart = $x[2];
-		$team = $x[3];
-		$cs = urldecode($x[4]);
-		$gruppe = $x[5];
-		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?team={$team}&championship=".urlencode($cs)."&group=$gruppe";
+		$qs = $x[3]."&";
+		if (preg_match(';team=(.*?)&;i', $qs, $x)) $team = "team=".$x[1];
+		if (preg_match(';teamtable=(.*?)&;i', $qs, $x)) $team = "teamtable=".$x[1];
+		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
+		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = $x[1];
+		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?{$team}&championship=".urlencode($cs)."&group=$gruppe";
+		if (!$spielplan) $error = "Tabelle geht nicht mit URL auf Team";
 	} else {
 		//print_r("else ".$url);die;
 		$url = "";
@@ -228,6 +239,7 @@ if ($url) {
 	$u = $url;
 	$spielplanverein = 0;
 }
+
 
 if (!$verband) $verband = "bhv-handball";
 if (!$sportart) $sportart = "HBDE";
@@ -260,6 +272,7 @@ if ($u && ($gruppe || $club)) {
 		if (!$team) $u = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
 		if ($aktuell) $u .= "&aktuell=1";
 	}
+	//dd($u);
 	// von nuliga lesen
 	$r = get_cache($u);
 	if (is_int($r) && $r < 0) {
@@ -318,30 +331,33 @@ if ($ob) {
 	$r = "<error>Serverfehler in fetch_table.php $ob</error>";
 }
 
-if (!$r and $spielplanverein) $r = "<error>Keine Spiele im Zeitraum gefunden ($ss-$ee)</error>";
-else if (!$r) $r = "<error>Konnte Tabelle bei NuLiga nicht finden</error>";
-if (!$u) $r = "<error>Keine URL angegeben</error>";
+if ($error) $r = "<error>$error</error>";
+else if (!$r and $spielplanverein) $r = "<error>Keine Spiele im Zeitraum gefunden ($ss-$ee)</error>";
+else if (!$r) $r = "<error>Konnte Tabelle/Spielplan bei NuLiga nicht finden</error>";
+if (!$u) $r = "<error>Keine gültige URL angegeben</error>";
 
 // nach JSON Konvertieren und zurückliefern
-error_reporting(E_ALL & ~(E_NOTICE|E_WARNING));
+//error_reporting(E_ALL & ~(E_NOTICE|E_WARNING));
 if ($jn) {
 	try {
 	$r = new SimpleXMLElement($r);
+	if ($debug_message) $r->addChild("debug", $debug_message);
 	$r = json_encode($r);
 	// empty objects to empty strings {} => ""
 	$r = str_replace("{}", '""', $r);
 	} catch (Exception $e) {
-		$r = "";
+		$r = '{"error": "XML Parser Exception"}';
 	}
 } else {
 	try {
 	$r = "<wrapper>$r</wrapper>"; // topmost node geht verloren, für $jn pfad ändern wir das nicht, wegen kompatibel
 	$r = new SimpleXMLElement($r);
+	if ($debug_message) $r->addChild("debug", $debug_message);
 	$r = json_encode($r);
 	// empty objects to empty strings {} => ""
 	$r = str_replace("{}", '""', $r);
 	} catch (Exception $e) {
-		$r = "";
+		$r = '{"error": "XML Parser Exception"}';
 	}
 }
 //print_r($r); die;

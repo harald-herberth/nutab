@@ -46,6 +46,7 @@ function init($s) {
 	else $tennis = 0; 
 	//echo "<pre>" . htmlentities(print_r($tab,true));die;
 	array_shift($rows);
+	//pp($rows);die;
 	$all_empty = array_fill(0,20,"");
 	foreach($rows as $row) {
 		if (1 > preg_match_all(';<td.*</td;ismU', $row, $x)) return;
@@ -383,7 +384,7 @@ function init($s) {
 			$tab = $s;
 		}
 		if (preg_match(';>Heimmannschaft;ismU', $s)) {
-			$sn = $s;
+			$sn .= $s;
 		}
 	}
 	if (!$sn) return;
@@ -396,6 +397,9 @@ function init($s) {
 	if (preg_match(';Matchpunkte.*Sätze;ismU', $rows[0])) $tennis = 1; 
 	else if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 2; 
 	else $tennis = 0;
+	if ($tennis) {
+		if (preg_match(';Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
+	}
 	$spielort = 0; if ($tennis && preg_match(';Spielort;ismU', $rows[0])) $spielort = 1;
 	$platz = 0; if ($tennis && preg_match(';Platz;ismU', $rows[0])) $platz = 1;
 	array_shift($rows);
@@ -417,6 +421,7 @@ function init($s) {
 		// 2:tag, datum-zeit, [Ort,]   Heim, Gast, Matchpunkte, Bericht
 		//                             5     6      7           8  
 		// also be Tennis kann der Spielort noch vor dem Heim stehen, dann nehmen wir ihn als Halle
+		// Datum, Uhrzeit 	Spielort 	Platz 	Nr. 	Heimmannschaft 	Gastmannschaft 	Matchpunkte 	Spielbericht
 		//
 		if (2 > preg_match_all(';<td.*</td;ismU', $row, $x)) continue; 
 		$x = $x[0];
@@ -440,7 +445,7 @@ function init($s) {
 			} else {
 				array_splice($x, 1, 1, array($datum, $zeit));
 			}
-			array_splice($x, 4, 0, array("")); // Spielnummer leer
+			if ($keineSpNummer) array_splice($x, 4, 0, array("")); // Spielnummer leer
 			if ($tennis == 2) {
 				array_splice($x, 8, 0, array("", ""));
 			}
@@ -472,6 +477,7 @@ function init($s) {
 			$x[$i] = str_replace('&nbsp;', ' ', $x[$i]);
 			$x[$i] = trim($x[$i]);
 		}
+		if ($tennis) $hal = $x[3];
 		if ($x[0]) $tag = $x[0];
 		if ($x[1]) $datum = $x[1];
 		$zeit = "00:00";

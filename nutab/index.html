@@ -58,6 +58,7 @@ mit Staffel, eigentlich bezieht sich Tabelle und Spielplan immer auf eine
 Staffel (group in nuLiga).</p>
 <h1>Änderungen</h1>
 <dl>
+	<li>2021-03-27: Anpassung an URL und Layout Struktur von nuLiga. Tabelle nicht mehr über Team-Seite möglich. auchAK nicht mehr unterstützt
 	<li>2020-02-29: PHP 7.4 und Wochentag und Halle_Name_Kurz eingeführt (alles als Beitrag über Pull-Request)
 	<li>2019-09-09: srsAuchAK eingeführt. srsClub unterstützt auch Einschränkung auf bestimmte Ligen dieses Vereins.
 	<li>2019-06-23: Tennis Vereinsspielplan und Tennis Team-Tabelle geht jetz auch. Jede Tabelle kann über srsClass=xxx mit einer CSS Klasse versehen werden
@@ -109,8 +110,6 @@ gewählt werden)</p>
     <td>srsURL</td>
     <td>URL auf Tabelle der Liga in nuLiga.<br>
       zB srsURL=&quot;<a href="https://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=MF+2019%2F20&group=246367">https://bhv-handball.liga.nu/cgi-bin/WebObjects/nuLigaHBDE.woa/wa/groupPage?championship=MF+2019%2F20&group=246367</a>&quot;<br>
-      Für Tennis ist auch die URL auf die Team-Seite möglich, dann wird die Tabelle der Mannschaft ausgegeben, und nicht die Tabelle der Liga.<br>
-      zB "<a href="https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22">https://htv.liga.nu/cgi-bin/WebObjects/nuLigaTENDE.woa/wa/teamPortrait?team=2306425&championship=TB+Mittelhessen+19&group=22</a>"
   </tr>
 </table>
 <p>&nbsp;Optionale Parameter</p>
@@ -142,7 +141,7 @@ gewählt werden)</p>
   </tr>
   <tr>
     <td>srsAuchAK</td>
-    <td>Mannschaften, die außer Konkurrenz spielen, werden normal eingereit in der Tabelle ausgegeben<br>
+    <td>NICHT MEHR UNTERSTÜTZT. Mannschaften, die außer Konkurrenz spielen, werden normal eingereit in der Tabelle ausgegeben<br>
       Mögliche Werte: 0 (oder fehlt), 1</td>
   </tr>
   <tr>
