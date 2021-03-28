@@ -182,7 +182,7 @@ class NuLiga {
 		);
 		if ($DEB) {
 			$t1 = microtime(true); $t1s = date("H:i:s", (int)$t1); $t1m = $t1*1000%1000;
-			$handle = fopen("helper.log", 'w'); fwrite($handle, "$t1s.$t1m Get $url\r\n"); fclose($handle);
+			$handle = fopen("helper.log", 'a'); fwrite($handle, "$t1s.$t1m Get $url\r\n"); fclose($handle);
 		}
 		$r = Requests::get($url, $h, $o);
 		$this->cookies = $r->cookies;
@@ -217,8 +217,8 @@ if ($url) {
 		$sportart = $x[2];
 		$qs = $x[3]."&";
 		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
-		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = $x[1];
-		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."&group=$gruppe";
+		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = "&group=".$x[1];
+		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."$gruppe";
 		if ($auchak) $url .= "&displayTyp=gesamt&displayDetail=tableWithIgnoredTeams";
 		//ex($url);die;
 	} else if (preg_match(';^https://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?teamPortrait\?(.*);i', $url, $x)) {
@@ -229,8 +229,9 @@ if ($url) {
 		if (preg_match(';team=(.*?)&;i', $qs, $x)) $team = "team=".$x[1];
 		if (preg_match(';teamtable=(.*?)&;i', $qs, $x)) $team = "teamtable=".$x[1];
 		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
-		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = $x[1];
-		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?{$team}&championship=".urlencode($cs)."&group=$gruppe";
+		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = "&group=".$x[1];
+		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?{$team}&championship=".urlencode($cs)."$gruppe";
+		$nurteam = 1;
 		if (!$spielplan) $error = "Tabelle geht nicht mit URL auf Team";
 	} else {
 		//print_r("else ".$url);die;
@@ -243,6 +244,7 @@ if ($url) {
 
 if (!$verband) $verband = "bhv-handball";
 if (!$sportart) $sportart = "HBDE";
+$club = "";
 if ($spielplanverein) {
 	$spielplan = 0;
 	$club = (int) $club;
@@ -267,9 +269,9 @@ if ($spielplanverein) {
 	//die($u);
 }
 
-if ($u && ($gruppe || $club)) {
+if ($u && ($gruppe || $club || $nurteam)) {
 	if ($spielplan) {
-		if (!$team) $u = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."&group=$gruppe";
+		if (!$team) $u = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."$gruppe";
 		if ($aktuell) $u .= "&aktuell=1";
 	}
 	//dd($u);
