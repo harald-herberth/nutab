@@ -202,17 +202,22 @@ function init($s) {
 	if (!$sn) return;
 	if (1 > preg_match_all(';<tr.*</tr;ismU', $sn, $x)) return;
 	$rows = $x[0];
-	if (preg_match(';Halle.*Nr\..*Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
-	if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 1; else $tennis = 0;
+	if (preg_match(';Halle.*Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
+	if (preg_match(';Matchpunkte.*Sätze;ismU', $rows[0])) $tennis = 1; 
+	else if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 2; 
+	else $tennis = 0;
+	if ($tennis) {
+		if (preg_match(';Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
+	}
 	array_shift($rows);
 	$datum = date("d.m.Y");
 	foreach($rows as $row) {
 		// tag, datum, zeit, halle, [Nr,] Liga, Heim, Gast, sr/tore, sbb, genehmigt
 		//  0     1      2      3      4   5      6     7     8       9
 		// bei tennis
-		// tag, datum-zeit, , Liga, Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
-		// tag, datum, zeit, , , Liga, Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
-		//  0,    1    2    3 4    5    6       7          8       9       10    11
+		// tag, datum-zeit,, [Nr] , Liga, Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
+		// tag, datum, zeit,leer ,Nr , Liga, Heim, Gast, Matchpunkte, Sätze, Spiele, Bericht
+		//  0,    1    2     3     4    5    6       7          8       9       10    11
 		if (1 > preg_match_all(';<td.*</td;ismU', $row, $x)) return;
 		$x = $x[0];
 		// bei termin offen haben wir eine Spalte weniger, und kein Datum
@@ -224,15 +229,18 @@ function init($s) {
 		}
 		// bei Tennis Zeit in extra Spalte und leere spalten einfügen
 		if ($tennis) {
+			// ist hier nie 2?
 			if (preg_match(';(\d\d\.\d\d\.\d\d\d\d) (\d\d:\d\d);ismU', $x[1], $xx)) {
-				array_splice($x, 1, 2, array($xx[1], $xx[2], "", ""));
+				array_splice($x, 1, 1, array($xx[1], $xx[2]));
 			} else
-				array_splice($x, 1, 2, array($datum, $zeit, "", ""));
+				array_splice($x, 1, 1, array($datum, $zeit));
+			if ($keineSpNummer) array_splice($x, 4, 0, array("")); // Spielnummer leer
 		}
 		// falls keine Spielnummer da ist, eine 0 einfügen
 		if (!$tennis && $keineSpNummer) {
 			array_splice($x, 4, 0, array("0"));
 		}
+		//pp($x);die;
 		//Hallenbezeichnung aus dem span Tag herausholen
 		// wird dann als Halle_Name_kurz bereitgestellt
 		$hal = $x[3];
@@ -253,6 +261,7 @@ function init($s) {
 			if ($tennis) $x[$i] = str_replace('[Routenplan]', '', $x[$i]);
 			$x[$i] = trim($x[$i]);
 		}
+		if ($tennis) $hal = $x[3]; // wird leer sein
 		if ($x[0]) $tag = $x[0];
 		if ($x[1]) $datum = $x[1];
 		if ($x[2]) $zeit = substr(trim($x[2]),0,5);

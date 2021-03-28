@@ -244,7 +244,6 @@ if ($url) {
 
 if (!$verband) $verband = "bhv-handball";
 if (!$sportart) $sportart = "HBDE";
-$club = "";
 if ($spielplanverein) {
 	$spielplan = 0;
 	$club = (int) $club;
@@ -268,6 +267,7 @@ if ($spielplanverein) {
 	$u = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/clubMeetings?searchTimeRange=2&searchType=1{$s}&club={$club}&searchMeetings=Suchen";
 	//die($u);
 }
+else $club = "";
 
 if ($u && ($gruppe || $club || $nurteam)) {
 	if ($spielplan) {
