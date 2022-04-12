@@ -247,6 +247,13 @@ function init($s) {
 		if (!$tennis) {
 			preg_match(';title="(.*)";ismU', $x[3], $hal_match);
 			$hal = $hal_match[1];
+			// Link zur Halle aus dem a Tag herausholen
+			// wird dann als Halle_Link bereitgestellt
+			if (preg_match('/href="(.*?)"/', $x[3], $halle_link)) {
+				$halle_link = $halle_link[1]; $halle_link = $this->base . $halle_link;
+				$halle_link = base64_encode($halle_link);
+				if (!$this->base) $halle_link = "";
+			} else $halle_link = "";
 		}
 		$sbb = $x[$tennis ? 11 : 9];
 		if (preg_match('/href="(.*?)"/', $sbb, $sbb)) {
@@ -321,6 +328,7 @@ function init($s) {
 			"Halle_Name_kurz" => $hal,
 			"Halle_Kuerzel" => $halle,
 			"Halle_Abk" => $halle_abk,
+			"Halle_Link" => "$halle_link",
 			"Punkte_Heim" => "",
 			"Tore_Heim" => $tore_heim,
 			"Punkte_Gast" => "",
@@ -476,6 +484,13 @@ function init($s) {
 		if (!$tennis) {
 			preg_match(';title="(.*)";ismU', $x[3], $hal_match);
 			$hal = $hal_match[1];
+			// Link zur Halle aus dem a Tag herausholen
+			// wird dann als Halle_Link bereitgestellt
+			if (preg_match('/href="(.*?)"/', $x[3], $halle_link)) {
+				$halle_link = $halle_link[1]; $halle_link = $this->base . $halle_link;
+				$halle_link = base64_encode($halle_link);
+				if (!$this->base) $halle_link = "";
+			} else $halle_link = "";
 		}
 		$sr = $x[7];
 		foreach ($x as $i => $v) {
@@ -560,6 +575,7 @@ function init($s) {
 			"Halle_Name_kurz" => $hal,
 			"Halle_Kuerzel" => $halle,
 			"Halle_Abk" => $halle_abk,
+			"Halle_Link" => "$halle_link",
 			"Punkte_Heim" => "",
 			"Tore_Heim" => $tore_heim,
 			"Punkte_Gast" => "",
