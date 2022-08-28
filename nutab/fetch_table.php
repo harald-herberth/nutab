@@ -143,8 +143,8 @@ function put_cache($u, $r) {
 
 // hält die Verbindung mit nuliga, kann Seiten abrufen, und POSTs absenden
 // umgestellt auf requests for php nehmen https://requests.ryanmccue.info/
-require_once("Requests-1.7.0/library/Requests.php");
-Requests::register_autoloader();
+require_once("Requests-2/src/Autoload.php");
+WpOrg\Requests\Autoload::register();
 class NuLiga {
 	var $cookies;
 	function init($state) {
@@ -165,7 +165,7 @@ class NuLiga {
 		if (!preg_match(';^http;i', $url)) throw new Exception("url nicht absolut: $url");
 		if (!$this->cookies) $this->cookies = array();
 		$o = array(
-			//"transport" => "Requests_Transport_cURL",
+			//"transport" => "WpOrg\Requests\Transport\Curl",
 			//"cookies" => $this->cookies,
 			//"proxy" => "localhost:8888",
 			"verify" => false, // true wäre besser, aber uns ist es egal mit welchem Server wir reden
@@ -184,7 +184,7 @@ class NuLiga {
 			$t1 = microtime(true); $t1s = date("H:i:s", (int)$t1); $t1m = $t1*1000%1000;
 			$handle = fopen("helper.log", 'a'); fwrite($handle, "$t1s.$t1m Get $url\r\n"); fclose($handle);
 		}
-		$r = Requests::get($url, $h, $o);
+		$r = WpOrg\Requests\Requests::get($url, $h, $o);
 		$this->cookies = $r->cookies;
 		$this->ref = $url;
 		$ret = rutf($r->body);
