@@ -218,7 +218,8 @@ if ($url) {
 		$qs = $x[3]."&";
 		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
 		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = "&group=".$x[1];
-		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."$gruppe";
+		$domain =  "https://$verband.liga.nu";
+		$url = "$domain/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."$gruppe";
 		if ($auchak) $url .= "&displayTyp=gesamt&displayDetail=tableWithIgnoredTeams";
 		//ex($url);die;
 	} else if (preg_match(';^https://(.*?)\.liga\.nu/.*?/nuLiga(.*?)\.woa.*?teamPortrait\?(.*);i', $url, $x)) {
@@ -230,9 +231,21 @@ if ($url) {
 		if (preg_match(';teamtable=(.*?)&;i', $qs, $x)) $team = "teamtable=".$x[1];
 		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
 		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = "&group=".$x[1];
-		$url = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?{$team}&championship=".urlencode($cs)."$gruppe";
+		$domain =  "https://$verband.liga.nu";
+		$url = "$domain/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/teamPortrait?{$team}&championship=".urlencode($cs)."$gruppe";
 		$nurteam = 1;
 		if (!$spielplan) $error = "Tabelle geht nicht mit URL auf Team";
+	} else if (preg_match(';^https://(.*?)\.click-tt\.de/.*?/nuLiga(.*?)\.woa.*?groupPage\?(.*);i', $url, $x)) {
+		// https://wttv.click-tt.de/cgi-bin/WebObjects/nuLigaTTDE.woa/wa/groupPage?championship=D%C3%BCsseldorf%2022/23&group=417970
+		// Tabelle/Spielplan für dieses Team Tischtennis
+		$verband = $x[1];
+		$sportart = $x[2];
+		$qs = $x[3]."&";
+		if (preg_match(';championship=(.*?)&;i', $qs, $x)) $cs = urldecode($x[1]);
+		if (preg_match(';group=(.*?)&;i', $qs, $x)) $gruppe = "&group=".$x[1];
+		$domain =  "https://$verband.click-tt.de";
+		$url = "$domain/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?championship=".urlencode($cs)."$gruppe";
+		if ($auchak) $url .= "&displayTyp=gesamt&displayDetail=tableWithIgnoredTeams";
 	} else {
 		//print_r("else ".$url);die;
 		$url = "";
@@ -244,6 +257,7 @@ if ($url) {
 
 if (!$verband) $verband = "bhv-handball";
 if (!$sportart) $sportart = "HBDE";
+if (!$domain) $domain = "https://$verband.liga.nu";
 if ($spielplanverein) {
 	$spielplan = 0;
 	$club = (int) $club;
@@ -264,14 +278,14 @@ if ($spielplanverein) {
 	}
 	$ss = $s; $ee = $e;
 	if ($s and $e) $s = "&searchTimeRangeFrom=$s&searchTimeRangeTo=$e"; else $s = "";
-	$u = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/clubMeetings?searchTimeRange=2&searchType=1{$s}&club={$club}&searchMeetings=Suchen";
+	$u = "$domain/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/clubMeetings?searchTimeRange=2&searchType=1{$s}&club={$club}&searchMeetings=Suchen";
 	//die($u);
 }
 else $club = "";
 
 if ($u && ($gruppe || $club || $nurteam)) {
 	if ($spielplan) {
-		if (!$team) $u = "https://$verband.liga.nu/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."$gruppe";
+		if (!$team) $u = "$domain/cgi-bin/WebObjects/nuLiga{$sportart}.woa/wa/groupPage?displayTyp=gesamt&displayDetail=meetings&championship=".urlencode($cs)."$gruppe";
 		if ($aktuell) $u .= "&aktuell=1";
 	}
 	//dd($u);
@@ -336,7 +350,7 @@ if ($ob) {
 if ($error) $r = "<error>$error</error>";
 else if (!$r and $spielplanverein) $r = "<error>Keine Spiele im Zeitraum gefunden ($ss-$ee)</error>";
 else if (!$r) $r = "<error>Konnte Tabelle/Spielplan bei NuLiga nicht finden</error>";
-if (!$u) $r = "<error>Keine gültige URL angegeben</error>";
+if (!$u) $r = "<error>Keine gueltige URL angegeben</error>";
 
 // nach JSON Konvertieren und zurückliefern
 //error_reporting(E_ALL & ~(E_NOTICE|E_WARNING));

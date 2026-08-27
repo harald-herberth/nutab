@@ -202,7 +202,7 @@ function init($s) {
 	if (!$sn) return;
 	if (1 > preg_match_all(';<tr.*</tr;ismU', $sn, $x)) return;
 	$rows = $x[0];
-	if (preg_match(';Halle.*Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
+	if (preg_match(';Ort.*Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
 	if (preg_match(';Matchpunkte.*Sätze;ismU', $rows[0])) $tennis = 1; 
 	else if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 2; 
 	else $tennis = 0;
