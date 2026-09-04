@@ -410,7 +410,7 @@ function init($s) {
 	if (preg_match(';>Heimmannschaft.*Gastmannschaft;ismU', $rows[1])) {
 		array_shift($rows); // bei Pokal wird Zeile mit Finale entfernt
 	}
-	if (preg_match(';Halle.*Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
+	if (preg_match(';Ort.*Nr\..*>Heim;ismU', $rows[0])) $keineSpNummer = 0; else $keineSpNummer = 1;
 	if (preg_match(';Matchpunkte.*Sätze;ismU', $rows[0])) $tennis = 1; 
 	else if (preg_match(';Matchpunkte;ismU', $rows[0])) $tennis = 2; 
 	else $tennis = 0;
